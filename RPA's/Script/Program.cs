@@ -14,9 +14,14 @@ namespace Script
 
     class Program
     {
+        private static string KulturArv_Location = args[0];
         static async Task Main(string[] args)
         {
-            await SearchAsync(); 
+            while(true)
+            {
+            await SearchAsync();
+            await Search_Europeana_Database(); 
+            }
         }
 
         private async static Task SearchAsync(){
@@ -25,7 +30,7 @@ namespace Script
             int Search_Point = 1;
             int Max_Search_Point = 3000; //Should be changed.
             HttpClient client = new HttpClient();  
-            while(true){
+           
                 if(Search_Point <= Max_Search_Point){
                     string uri = Host + Path + Search_Point.ToString();
                     HttpResponseMessage response = await client.GetAsync(uri);
@@ -37,7 +42,7 @@ namespace Script
                 else {
                     Search_Point = 1; 
                 }
-            }
+            
         }
 
         private async static Task Search_Europeana_Database()
@@ -47,8 +52,7 @@ namespace Script
             int Search_Point = 1; 
             int Max_Search_Point = 3000; 
             HttpClient client = new HttpClient(); 
-            while(true)
-            {
+          
                 if(Search_Point <= Max_Search_Point)
                 {
                     string uri = Host + Path + ""; 
@@ -58,9 +62,10 @@ namespace Script
 
                     Strip_Text_From_HTML_RegEx_Kulturarv(contentString);
                 }
-            }
+            
 
         }
+
         private static void Cleanup_And_Prepare_Europeana_Data_For_Database(string data)
         {
             //TODO: Recognize data. 
