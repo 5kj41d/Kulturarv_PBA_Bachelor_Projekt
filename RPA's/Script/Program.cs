@@ -12,6 +12,7 @@ namespace Script
     //Config file: https://www.c-sharpcorner.com/article/four-ways-to-read-configuration-setting-in-c-sharp/ 
     //https://docs.microsoft.com/en-us/dotnet/api/system.configuration.configurationmanager?view=dotnet-plat-ext-6.0 
     //Segmentation Fault Problem Solution --> Use pacman to install .NET Core SDK and Runtime and not Snap since it is prone to this error.
+    //Regular Expressions Tutorial: https://www.youtube.com/watch?v=sa-TUpSx1JA&t=1s&ab_channel=CoreySchafer 
 
     public class Program
     {
@@ -21,7 +22,6 @@ namespace Script
             await InitAsync(); 
         }
 
-        //TODO: Fix the args spot to fix to database location. 
         private static async Task InitAsync()
         {
             try{    
@@ -96,7 +96,7 @@ namespace Script
         }
 
         private static async Task Strip_Text_From_HTML_RegEx_KulturarvAsync(string data){
-            string RegEx = "(<!-- Start free text for location -->)"; 
+            string RegEx = "(<!-- Start free text for location -->){1}\\s*"; 
             string Result = "";
             Regex re = new Regex(RegEx, RegexOptions.None);
 
@@ -149,7 +149,7 @@ namespace Script
                     settings[key].Value = value;  
                 }  
                 configFile.Save(ConfigurationSaveMode.Modified);  
-                ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);  
+                ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);  //Change Appsettings to --> Se config fil. 
             }  
             catch (ConfigurationErrorsException)  
             {  
