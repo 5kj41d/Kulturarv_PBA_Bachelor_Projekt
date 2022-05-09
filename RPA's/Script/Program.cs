@@ -15,15 +15,21 @@ namespace Script
 
     public class Program
     {
-        private static string KulturArv_Location;       
+        private static string _kulturArv_Location;       
         private static IDriver _driver;
-        private static string uri = ""; //Neo4J IP
-        static async Task Main(string[] args)   //Kommune = 0, Password = 1
+        private static string _neo4J_Uri = ""; //Neo4J IP
+        static void Main(string[] args)   //Kommune = 0, Password = 1
         {
-            KulturArv_Location = args[0];
+            Start_Program(); 
+        }
+
+        //TODO: Fix the [0] spot to fix to database location. 
+        private static async Task InitAsync(string[] args)
+        {
+            _kulturArv_Location = args[0];
             string user = args[1];
             string password = args[2];
-            _driver = GraphDatabase.Driver(uri, AuthTokens.Basic(user, password));
+            _driver = GraphDatabase.Driver(_neo4J_Uri, AuthTokens.Basic(user, password));
             
             while(true)
             {
@@ -115,7 +121,7 @@ namespace Script
             bool connected = false; 
             while(!connected)
             {
-                Console.WriteLine("Connection to " + uri + " could not be completed!\n Waiting two seconds and trying again...");
+                Console.WriteLine("Connection to " + _neo4J_Uri + " could not be completed!\n Waiting two seconds and trying again...");
                 System.Threading.Thread.Sleep(1000);
                 //TODO: Check database connection to Neo4J.
             }
@@ -129,6 +135,13 @@ namespace Script
         private static void Start_Program()
         {
             //TODO: Start program command. 
+            string[] inputs = {}; 
+            Console.WriteLine("Input the URL for the database: ");
+            inputs[0] = Console.ReadLine();
+            Console.WriteLine("Input the username for Neo4J: ");
+            inputs[1] = Console.ReadLine();
+            Console.WriteLine("Input the password for Neo4J: ");
+            inputs[2] = Console.ReadLine(); 
         }
     }
 }
