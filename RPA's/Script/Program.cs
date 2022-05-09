@@ -130,18 +130,23 @@ namespace Script
         private static void Pause_Program()
         {
             //TODO: Pause program command. 
+            //Use while(true) until user presses enter. Then start the program over. Remember properties. 
         }   
 
+        //TODO: Maybe use a foreach loop to change the input so we can add more. Generic approach. 
         private static void Start_Program()
         {
-            //TODO: Start program command. 
             string[] inputs = {}; 
+            Console.WriteLine("Enter URL for Kulturarv.dk: ");
+            inputs[0] = Console.ReadLine(); 
+            Console.WriteLine("Enter URL for Europeana database: ");
+            inputs[1] = Console.ReadLine();  
             Console.WriteLine("Input the URL for the database: ");
-            inputs[0] = Console.ReadLine();
+            inputs[2] = Console.ReadLine();
             Console.WriteLine("Input the username for Neo4J: ");
-            inputs[1] = Console.ReadLine();
+            inputs[3] = Console.ReadLine();
             Console.WriteLine("Input the password for Neo4J: ");
-            inputs[2] = Console.ReadLine(); 
+            inputs[4] = Console.ReadLine(); 
         }
     }
 }
