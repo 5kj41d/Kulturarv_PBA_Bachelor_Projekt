@@ -56,56 +56,36 @@ namespace Script
                 Console.WriteLine("Error reading app settings..."); 
             }
 
+            Check_Database_Connection(); 
+
             //TODO: Get the values and save them in these properties. 
             //_driver = GraphDatabase.Driver(_neo4J_Uri, AuthTokens.Basic(user, password));
             
             while(true)
             {
-                await Search_Kulturarv_Async();
-                await Search_Europeana_Database(); 
+                await Search_Kulturarv_Async("");
+                await Search_Europeana_Database(""); 
                 //TODO: Break this loop if admin says so. 
             }
         }
 
-        private async static Task Search_Kulturarv_Async(){ //TODO: Make a generic search method instead. 
-            string Host = "https://www.kulturarv.dk/";      //TODO: Change to global variable. 
-            string Path = "fundogfortidsminder/Lokalitet/"; 
-            int Search_Point = 1;
-            int Max_Search_Point = 3000; //TODO: Should be changed.
+        private async static Task Search_Kulturarv_Async(string uri){ //TODO: Make a generic search method instead. 
             HttpClient client = new HttpClient();  
-           
-                if(Search_Point <= Max_Search_Point){
-                    string uri = Host + Path + Search_Point.ToString();
-                    HttpResponseMessage response = await client.GetAsync(uri);
-                    string contentString = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(contentString);
+                HttpResponseMessage response = await client.GetAsync(uri);
+                string contentString = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(contentString);
 
-                    await Strip_Text_From_HTML_RegEx_KulturarvAsync(contentString); 
-                }   
-                else {
-                    Search_Point = 1; 
-                }
+                await Strip_Text_From_HTML_RegEx_KulturarvAsync(contentString); 
+                
         }
 
-        private async static Task Search_Europeana_Database()
+        private async static Task Search_Europeana_Database(string uri)
         {
-            string Host = "";   //TODO: Mangler. EDM --> Undersøg. 
-            string Path = ""; 
-            int Search_Point = 1; 
-            int Max_Search_Point = 3000; 
-            HttpClient client = new HttpClient(); 
-          
-                if(Search_Point <= Max_Search_Point)
-                {
-                    string uri = Host + Path + ""; 
-                    HttpResponseMessage response = await client.GetAsync(uri);
-                    string contentString = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(contentString);
-
-                    await Strip_Text_From_HTML_RegEx_KulturarvAsync(contentString);
-                }
-            
-
+            HttpClient client = new HttpClient();  
+            HttpResponseMessage response = await client.GetAsync(uri);
+            string contentString = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(contentString);
+            await Strip_Text_From_HTML_RegEx_KulturarvAsync(contentString);    
         }
 
         private static async Task Cleanup_And_Prepare_Europeana_Data_For_DatabaseAsync(string data)
@@ -154,13 +134,6 @@ namespace Script
             }
         }
 
-        private static void Pause_Program()
-        {
-            //TODO: Pause program command. 
-            //Use while(true) until user presses enter. Then start the program over. Remember properties. 
-        }   
-
-
         //TODO: Make able to call this. 
         static void AddUpdateAppSettings(string key, string value)  
         {  
@@ -184,5 +157,6 @@ namespace Script
                 Console.WriteLine("Error writing app settings");  
             }  
         }  
+        
     }
 }
