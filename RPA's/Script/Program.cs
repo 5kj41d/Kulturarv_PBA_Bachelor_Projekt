@@ -3,43 +3,59 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Neo4j.Driver;
+using System.Configuration;
+using System.Collections.Specialized;
 
 namespace Script
 {
     //https://wiki.archlinux.org/title/.NET
+    //Config file: https://www.c-sharpcorner.com/article/four-ways-to-read-configuration-setting-in-c-sharp/ 
+    //https://docs.microsoft.com/en-us/dotnet/api/system.configuration.configurationmanager?view=dotnet-plat-ext-6.0 
     //Segmentation Fault Problem Solution --> Use pacman to install .NET Core SDK and Runtime.
-
-    //TODO: Should be able to restart or pause for a certain time. 
-    //Should be able to add search parameter.
-    //Run each search in its own thread.  
 
     public class Program
     {
-        private static string _kulturArv_Location;       
         private static IDriver _driver;
-        private static string _neo4J_Uri = ""; //Neo4J IP
-        static void Main(string[] args)   //Kommune = 0, Password = 1
+        static async Task Main(string[] args)   //Kommune = 0, Password = 1
         {
-            Start_Program(); 
+            await InitAsync(); 
         }
 
-        //TODO: Fix the [0] spot to fix to database location. 
-        private static async Task InitAsync(string[] args)
+        //TODO: Fix the args spot to fix to database location. 
+        private static async Task InitAsync()
         {
-            _kulturArv_Location = args[0];
-            string user = args[1];
-            string password = args[2];
-            _driver = GraphDatabase.Driver(_neo4J_Uri, AuthTokens.Basic(user, password));
+            try{    
+                var searchSettings = ConfigurationManager.GetSection("SearchSettings") as NameValueCollection; 
+
+                if(searchSettings.Count == 0)
+                {
+                    Console.WriteLine("SearchSettings was empty!"); 
+                }
+                else 
+                {
+                    foreach(var key in searchSettings.AllKeys)
+                    {
+                        //TODO: Get all the keys and place them in the right spot. 
+                    }
+                }
+            } catch(ConfigurationErrorsException)
+            {
+                Console.WriteLine("Error reading app settings..."); 
+            }
+
+            //TODO: Get the values and save them in these properties. 
+            //_driver = GraphDatabase.Driver(_neo4J_Uri, AuthTokens.Basic(user, password));
             
             while(true)
             {
-                await SearchAsync();
+                await Search_Kulturarv_Async();
                 await Search_Europeana_Database(); 
+                //TODO: Break this loop if admin says so. 
             }
         }
 
-        private async static Task SearchAsync(){
-            string Host = "https://www.kulturarv.dk/"; 
+        private async static Task Search_Kulturarv_Async(){ //TODO: Make a generic search method instead. 
+            string Host = "https://www.kulturarv.dk/";      //TODO: Change to global variable. 
             string Path = "fundogfortidsminder/Lokalitet/"; 
             int Search_Point = 1;
             int Max_Search_Point = 3000; //TODO: Should be changed.
@@ -100,8 +116,6 @@ namespace Script
 
         private static void Save_Result_To_Neo4J(string document)
         {
-
-            Check_Database_Connection();
             using (var session = _driver.AsyncSession())
             {
                 var return_message = session.WriteTransactionAsync(async x =>
@@ -121,7 +135,7 @@ namespace Script
             bool connected = false; 
             while(!connected)
             {
-                Console.WriteLine("Connection to " + _neo4J_Uri + " could not be completed!\n Waiting two seconds and trying again...");
+                //Console.WriteLine("Connection to " + _neo4J_Uri + " could not be completed!\n Waiting two seconds and trying again...");
                 System.Threading.Thread.Sleep(1000);
                 //TODO: Check database connection to Neo4J.
             }
@@ -133,20 +147,29 @@ namespace Script
             //Use while(true) until user presses enter. Then start the program over. Remember properties. 
         }   
 
-        //TODO: Maybe use a foreach loop to change the input so we can add more. Generic approach. 
-        private static void Start_Program()
-        {
-            string[] inputs = {}; 
-            Console.WriteLine("Enter URL for Kulturarv.dk: ");
-            inputs[0] = Console.ReadLine(); 
-            Console.WriteLine("Enter URL for Europeana database: ");
-            inputs[1] = Console.ReadLine();  
-            Console.WriteLine("Input the URL for the database: ");
-            inputs[2] = Console.ReadLine();
-            Console.WriteLine("Input the username for Neo4J: ");
-            inputs[3] = Console.ReadLine();
-            Console.WriteLine("Input the password for Neo4J: ");
-            inputs[4] = Console.ReadLine(); 
-        }
+
+        //TODO: Make able to call this. 
+        static void AddUpdateAppSettings(string key, string value)  
+        {  
+            try  
+            {  
+                var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);  
+                var settings = configFile.AppSettings.Settings;  
+                if (settings[key] == null)  
+                {  
+                    settings.Add(key, value);  
+                }  
+                else  
+                {  
+                    settings[key].Value = value;  
+                }  
+                configFile.Save(ConfigurationSaveMode.Modified);  
+                ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);  
+            }  
+            catch (ConfigurationErrorsException)  
+            {  
+                Console.WriteLine("Error writing app settings");  
+            }  
+        }  
     }
 }
