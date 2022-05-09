@@ -24,10 +24,11 @@ namespace Script
             string user = args[1];
             string password = args[2];
             _driver = GraphDatabase.Driver(uri, AuthTokens.Basic(user, password));
+            
             while(true)
             {
-            await SearchAsync();
-            await Search_Europeana_Database(); 
+                await SearchAsync();
+                await Search_Europeana_Database(); 
             }
         }
 
@@ -35,7 +36,7 @@ namespace Script
             string Host = "https://www.kulturarv.dk/"; 
             string Path = "fundogfortidsminder/Lokalitet/"; 
             int Search_Point = 1;
-            int Max_Search_Point = 3000; //Should be changed.
+            int Max_Search_Point = 3000; //TODO: Should be changed.
             HttpClient client = new HttpClient();  
            
                 if(Search_Point <= Max_Search_Point){
@@ -77,31 +78,57 @@ namespace Script
             //TODO: Recognize data. 
             //Validate data. --> Language, content and maybe other missing parameters. 
             string result = ""; 
-            await Save_Result_To_Neo4J(result); 
+            Save_Result_To_Neo4J(result); 
         }
 
         private static async Task Strip_Text_From_HTML_RegEx_KulturarvAsync(string data){
             string RegEx = "(<!-- Start free text for location -->)"; 
             string Result = "";
             Regex re = new Regex(RegEx, RegexOptions.None);
+
+            //TODO: Check HTML document with regex. 
+
             Result = re.ToString();  
-            await Save_Result_To_Neo4J(Result); 
+            Save_Result_To_Neo4J(Result); 
         }
 
-        //This should be changed to save directly to the database (Neo4J).
-        private static async Task Save_Result_To_Neo4J(string document){
-            using(var session = _driver.AsyncSession())
+        private static void Save_Result_To_Neo4J(string document)
+        {
+
+            Check_Database_Connection();
+            using (var session = _driver.AsyncSession())
             {
-                var return_message = session.WriteTransactionAsync(x => 
+                var return_message = session.WriteTransactionAsync(async x =>
                 {
-                var result = x.RunAsync("CREATE (a:Greeting) " +
-                                    "SET a.message = $message " +
-                                    "RETURN a.message + ', from node ' + id(a)",
-                    new {document});
-                    return result.Single()[0].As<string>(); 
+                    var result = await x.RunAsync("CREATE (a:Greeting) " +
+                                        "SET a.message = $message " +
+                                        "RETURN a.message + ', from node ' + id(a)",
+                        new { document });
+                    return result;
                 });
-                Console.WriteLine(return_message); 
+                Console.WriteLine("Return message: " + return_message);
             }
+        }
+
+        private static void Check_Database_Connection()
+        {
+            bool connected = false; 
+            while(!connected)
+            {
+                Console.WriteLine("Connection to " + uri + " could not be completed!\n Waiting two seconds and trying again...");
+                System.Threading.Thread.Sleep(1000);
+                //TODO: Check database connection to Neo4J.
+            }
+        }
+
+        private static void Pause_Program()
+        {
+            //TODO: Pause program command. 
         }   
+
+        private static void Start_Program()
+        {
+            //TODO: Start program command. 
+        }
     }
 }
