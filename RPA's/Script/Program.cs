@@ -69,14 +69,13 @@ namespace Script
             }
         }
 
-        private async static Task Search_Kulturarv_Async(string uri){ //TODO: Make a generic search method instead. 
+        private async static Task Search_Kulturarv_Async(string uri)
+        { //TODO: Make a generic search method instead.
             HttpClient client = new HttpClient();  
-                HttpResponseMessage response = await client.GetAsync(uri);
-                string contentString = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(contentString);
-
-                await Strip_Text_From_HTML_RegEx_KulturarvAsync(contentString); 
-                
+            HttpResponseMessage response = await client.GetAsync(uri);
+            string contentString = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(contentString);
+            await Strip_Text_From_HTML_RegEx_KulturarvAsync(contentString);       
         }
 
         private async static Task Search_Europeana_Database(string uri)
