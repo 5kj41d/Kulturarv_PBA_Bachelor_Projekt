@@ -11,7 +11,7 @@ namespace Script
     //https://wiki.archlinux.org/title/.NET
     //Config file: https://www.c-sharpcorner.com/article/four-ways-to-read-configuration-setting-in-c-sharp/ 
     //https://docs.microsoft.com/en-us/dotnet/api/system.configuration.configurationmanager?view=dotnet-plat-ext-6.0 
-    //Segmentation Fault Problem Solution --> Use pacman to install .NET Core SDK and Runtime.
+    //Segmentation Fault Problem Solution --> Use pacman to install .NET Core SDK and Runtime and not Snap since it is prone to this error.
 
     public class Program
     {
@@ -26,7 +26,7 @@ namespace Script
         {
             try{    
                 var searchSettings = ConfigurationManager.GetSection("SearchSettings") as NameValueCollection; 
-
+                var connectionString = ConfigurationManager.GetSection("DatabaseSettings") as NameValueCollection;
                 if(searchSettings.Count == 0)
                 {
                     Console.WriteLine("SearchSettings was empty!"); 
@@ -36,6 +36,19 @@ namespace Script
                     foreach(var key in searchSettings.AllKeys)
                     {
                         //TODO: Get all the keys and place them in the right spot. 
+                        Console.WriteLine(key + " = " + searchSettings[key]);
+                    }
+                }
+                if(connectionString.Count == 0)
+                {
+                    Console.WriteLine("DatabaseSettings was empty!");
+                } 
+                else 
+                {
+                    foreach(var key in connectionString.AllKeys)
+                    {
+                        //TODO: Get all the keys and place them in the right spot. 
+                        Console.WriteLine(key + " = " + connectionString[key]);
                     }
                 }
             } catch(ConfigurationErrorsException)
