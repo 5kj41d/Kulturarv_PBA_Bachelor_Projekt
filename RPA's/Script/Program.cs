@@ -16,6 +16,7 @@ namespace Script
     //Segmentation Fault Problem Solution --> Use pacman to install .NET Core SDK and Runtime and not Snap since it is prone to this error.
     //Regular Expressions Tutorial: https://www.youtube.com/watch?v=sa-TUpSx1JA&t=1s&ab_channel=CoreySchafer 
     //Nginx: https://www.nginx.com/learn/ 
+    //https://www.thecodebuzz.com/class-library-console-read-apsettings-json-configuration/ 
     #endregion
 
     public class Program
