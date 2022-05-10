@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using Neo4j.Driver;
 using System.Configuration;
 using System.Collections.Specialized;
-using System.Collections.Generic;
 
 namespace Script
 {
