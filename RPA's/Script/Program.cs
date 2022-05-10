@@ -5,38 +5,45 @@ using System.Text.RegularExpressions;
 using Neo4j.Driver;
 using System.Configuration;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace Script
 {
+    #region Ressources
     //https://wiki.archlinux.org/title/.NET
     //Config file: https://www.c-sharpcorner.com/article/four-ways-to-read-configuration-setting-in-c-sharp/ 
     //https://docs.microsoft.com/en-us/dotnet/api/system.configuration.configurationmanager?view=dotnet-plat-ext-6.0 
     //Segmentation Fault Problem Solution --> Use pacman to install .NET Core SDK and Runtime and not Snap since it is prone to this error.
     //Regular Expressions Tutorial: https://www.youtube.com/watch?v=sa-TUpSx1JA&t=1s&ab_channel=CoreySchafer 
-
+    //Nginx: https://www.nginx.com/learn/ 
+    #endregion
     public class Program
     {
         private static IDriver _driver;
+        private static string user; 
+        private static string password; 
         static async Task Main(string[] args)   //Kommune = 0, Password = 1
         {
+            user = args[0]; 
+            password = args[1];
             await InitAsync(); 
         }
 
         private static async Task InitAsync()
         {
             try{    
-                var searchSettings = ConfigurationManager.GetSection("SearchSettings") as NameValueCollection; 
+                var URL_searchSettings = ConfigurationManager.GetSection("SearchSettings") as NameValueCollection; 
                 var connectionString = ConfigurationManager.GetSection("DatabaseSettings") as NameValueCollection;
-                if(searchSettings.Count == 0)
+                if(URL_searchSettings.Count == 0)
                 {
                     Console.WriteLine("SearchSettings was empty!"); 
                 }
                 else 
                 {
-                    foreach(var key in searchSettings.AllKeys)
+                    foreach(var key in URL_searchSettings.AllKeys)
                     {
                         //TODO: Get all the keys and place them in the right spot. 
-                        Console.WriteLine(key + " = " + searchSettings[key]);
+                        Console.WriteLine(key + " = " + URL_searchSettings[key]);
                     }
                 }
                 if(connectionString.Count == 0)
@@ -56,10 +63,8 @@ namespace Script
                 Console.WriteLine("Error reading app settings..."); 
             }
 
-            Check_Database_Connection(); 
-
             //TODO: Get the values and save them in these properties. 
-            //_driver = GraphDatabase.Driver(_neo4J_Uri, AuthTokens.Basic(user, password));
+            await Check_Database_Connection_Async(user, password, "", ""); 
             
             while(true)
             {
@@ -106,7 +111,7 @@ namespace Script
             Save_Result_To_Neo4J(Result); 
         }
 
-        private static void Save_Result_To_Neo4J(string document)
+        private static async void Save_Result_To_Neo4J(string document)
         {
             using (var session = _driver.AsyncSession())
             {
@@ -119,17 +124,43 @@ namespace Script
                     return result;
                 });
                 Console.WriteLine("Return message: " + return_message);
+                await session.CloseAsync(); 
             }
         }
 
-        private static void Check_Database_Connection()
+        private static async Task Check_Database_Connection_Async(string username, string password, string URL, string port)
         {
+            //Port is optional. 
             bool connected = false; 
-            while(!connected)
+            if (string.IsNullOrEmpty(username))
             {
-                //Console.WriteLine("Connection to " + _neo4J_Uri + " could not be completed!\n Waiting two seconds and trying again...");
-                System.Threading.Thread.Sleep(1000);
-                //TODO: Check database connection to Neo4J.
+                throw new ArgumentException($"'{nameof(username)}' cannot be null or empty.", nameof(username));
+            }
+
+            if (string.IsNullOrEmpty(password))
+            {
+                throw new ArgumentException($"'{nameof(password)}' cannot be null or empty.", nameof(password));
+            }
+
+            if (string.IsNullOrEmpty(URL))
+            {
+                throw new ArgumentException($"'{nameof(URL)}' cannot be null or empty.", nameof(URL));
+            }
+            _driver = GraphDatabase.Driver(URL, AuthTokens.Basic(user, password));
+            var session = _driver.AsyncSession();
+            var return_result = session.RunAsync("MATCH() " + "RETURN ''").As<string>();
+            await session.CloseAsync(); 
+            if(return_result != null)
+            {
+                Console.WriteLine("Connection to " + URL + " as " + user + " is successfull!");
+                Console.WriteLine("Message revieved was: " + return_result); 
+                connected = true; 
+            }
+            if(!connected)
+            {
+                Console.WriteLine("Connection to " + URL + " could not be completed!\n Waiting two seconds and trying again...");
+                System.Threading.Thread.Sleep(2000);
+                await Check_Database_Connection_Async(user, password, URL, port);
             }
         }
 
