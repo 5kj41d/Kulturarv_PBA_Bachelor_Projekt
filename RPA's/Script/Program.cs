@@ -17,12 +17,13 @@ namespace Script
     //Regular Expressions Tutorial: https://www.youtube.com/watch?v=sa-TUpSx1JA&t=1s&ab_channel=CoreySchafer 
     //Nginx: https://www.nginx.com/learn/ 
     #endregion
+
     public class Program
     {
         private static IDriver _driver;
         private static string user; 
         private static string password; 
-        static async Task Main(string[] args)   //Kommune = 0, Password = 1
+        static async Task Main(string[] args)   //username for Neo4J = args[0], Password for Neo4J = args[1]
         {
             user = args[0]; 
             password = args[1];
@@ -34,6 +35,7 @@ namespace Script
             try{    
                 var URL_searchSettings = ConfigurationManager.GetSection("SearchSettings") as NameValueCollection; 
                 var connectionString = ConfigurationManager.GetSection("DatabaseSettings") as NameValueCollection;
+                var regexs = ConfigurationManager.GetSection("RegularExpressions") as NameValueCollection;
                 if(URL_searchSettings.Count == 0)
                 {
                     Console.WriteLine("SearchSettings was empty!"); 
@@ -58,6 +60,18 @@ namespace Script
                         Console.WriteLine(key + " = " + connectionString[key]);
                     }
                 }
+                if(regexs.Count == 0)
+                {
+                    Console.WriteLine("RegularExpressions was empty!");
+                }
+                else 
+                {
+                    foreach(var key in regexs.AllKeys)
+                    {
+                        //TODO: Get all the keys and place them in the right spot. 
+                        Console.WriteLine(key + " = " + regexs[key]);
+                    }
+                }
             } catch(ConfigurationErrorsException)
             {
                 Console.WriteLine("Error reading app settings..."); 
@@ -74,8 +88,9 @@ namespace Script
             }
         }
 
+        //TODO: Make a generic search method instead.
         private async static Task Search_Kulturarv_Async(string uri)
-        { //TODO: Make a generic search method instead.
+        { 
             HttpClient client = new HttpClient();  
             HttpResponseMessage response = await client.GetAsync(uri);
             string contentString = await response.Content.ReadAsStringAsync();
@@ -128,6 +143,7 @@ namespace Script
             }
         }
 
+        //TODO: Should be able to test more than one database. --> Check database type. 
         private static async Task Check_Database_Connection_Async(string username, string password, string URL, string port)
         {
             //Port is optional. 
