@@ -40,7 +40,7 @@ namespace Script
             await InitAsync();
         }
 
-        //TODO: FIX: Error reading app settings. 
+        //TODO: FIX: Error reading app settings (xml file). 
         private static async Task InitAsync()
         {
             try
