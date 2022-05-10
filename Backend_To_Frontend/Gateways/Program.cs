@@ -9,6 +9,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Gateways
 {
+    #region Ressources
+        //https://docs.microsoft.com/en-us/dotnet/architecture/microservices/multi-container-microservice-net-applications/implement-api-gateways-with-ocelot 
+        //Se The Gateway aggregation pattern in eShopOnContainers afsnittet. 
+    #endregion
     public class Program
     {
         public static void Main(string[] args)
@@ -22,5 +26,6 @@ namespace Gateways
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
     }
 }
