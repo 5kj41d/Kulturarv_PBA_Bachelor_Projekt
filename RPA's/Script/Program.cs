@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Neo4j.Driver;
 using System.Configuration;
 using System.Collections.Specialized;
+using Microsoft.Extensions.Configuration;
 
 namespace Script
 {
@@ -22,15 +23,35 @@ namespace Script
         private static IDriver _driver;
         private static string user; 
         private static string password; 
+        private static IConfiguration _config; 
         static async Task Main(string[] args)   //username for Neo4J = args[0], Password for Neo4J = args[1]
         {
+            if(args.Length == 0)
+            {
+                Console.WriteLine("Enter user and password");
+                user = Console.ReadLine();
+                password = Console.ReadLine(); 
+            }
+            else 
+            {
             user = args[0]; 
             password = args[1];
-            await InitAsync(); 
+            } 
+            await InitAsync();
         }
 
+        //TODO: FIX: Error reading app settings. 
         private static async Task InitAsync()
         {
+            try
+            {
+                _config = new ConfigurationBuilder().AddXmlFile("App.xml", optional: false, reloadOnChange: true).Build();
+            } 
+            catch(ConfigurationException e)
+            {
+                Console.WriteLine("Could'nt load the xml file!");
+                throw e; 
+            }
             try{    
                 var URL_searchSettings = ConfigurationManager.GetSection("SearchSettings") as NameValueCollection; 
                 var connectionString = ConfigurationManager.GetSection("DatabaseSettings") as NameValueCollection;
@@ -103,7 +124,7 @@ namespace Script
             HttpResponseMessage response = await client.GetAsync(uri);
             string contentString = await response.Content.ReadAsStringAsync();
             Console.WriteLine(contentString);
-            await Strip_Text_From_HTML_RegEx_KulturarvAsync(contentString);    
+            await Cleanup_And_Prepare_Europeana_Data_For_DatabaseAsync(contentString);    
         }
 
         private static async Task Cleanup_And_Prepare_Europeana_Data_For_DatabaseAsync(string data)
@@ -111,23 +132,25 @@ namespace Script
             //TODO: Recognize data. 
             //Validate data. --> Language, content and maybe other missing parameters. 
             string result = ""; 
+            await Log_Results_To_File(result);  //Demo.
             await Save_Result_To_Neo4J(result); 
         }
 
         private static async Task Strip_Text_From_HTML_RegEx_KulturarvAsync(string data){
             string pattern = "";  //--> Get from config file. 
-            string Result = "";
+            string result = "";
             string input = @"";
             RegexOptions options = RegexOptions.Multiline;
         
             foreach (Match m in Regex.Matches(input, pattern, options))
             {
                 Console.WriteLine("'{0}' found at index {1}.", m.Value, m.Index);
-                Result += m.ToString();  
+                result += m.ToString();  
             }
 
             //TODO: Check HTML document with regex. 
-            await Save_Result_To_Neo4J(Result); 
+            await Log_Results_To_File(result);  //Demo
+            await Save_Result_To_Neo4J(result); 
         }
 
         private static async Task Save_Result_To_Neo4J(string document)
@@ -209,9 +232,10 @@ namespace Script
         }  
 
         //Demo purpose. 
-        private void Log_Results_To_File()
+        private static async Task Log_Results_To_File(string result_data)
         {
             //TODO: Log the matches of the regex to a file. 
+            Console.WriteLine("Loading data to file: " + result_data);
         }
         
     }
