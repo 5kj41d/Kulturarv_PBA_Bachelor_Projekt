@@ -112,21 +112,26 @@ namespace Script
             //TODO: Recognize data. 
             //Validate data. --> Language, content and maybe other missing parameters. 
             string result = ""; 
-            Save_Result_To_Neo4J(result); 
+            await Save_Result_To_Neo4J(result); 
         }
 
         private static async Task Strip_Text_From_HTML_RegEx_KulturarvAsync(string data){
-            string RegEx = "";  //--> Get from config file. 
+            string pattern = "";  //--> Get from config file. 
             string Result = "";
-            Regex re = new Regex(RegEx, RegexOptions.None);
+            string input = @"";
+            RegexOptions options = RegexOptions.Multiline;
+        
+            foreach (Match m in Regex.Matches(input, pattern, options))
+            {
+                Console.WriteLine("'{0}' found at index {1}.", m.Value, m.Index);
+                Result += m.ToString();  
+            }
 
             //TODO: Check HTML document with regex. 
-
-            Result = re.ToString();  
-            Save_Result_To_Neo4J(Result); 
+            await Save_Result_To_Neo4J(Result); 
         }
 
-        private static async void Save_Result_To_Neo4J(string document)
+        private static async Task Save_Result_To_Neo4J(string document)
         {
             using (var session = _driver.AsyncSession())
             {
@@ -203,6 +208,12 @@ namespace Script
                 Console.WriteLine("Error writing app settings");  
             }  
         }  
+
+        //Demo purpose. 
+        private void Log_Results_To_File()
+        {
+            //TODO: Log the matches of the regex to a file. 
+        }
         
     }
 }
