@@ -116,7 +116,7 @@ namespace Script
         }
 
         private static async Task Strip_Text_From_HTML_RegEx_KulturarvAsync(string data){
-            string RegEx = "(<!-- Start free text for location -->){1}\\s*"; 
+            string RegEx = "";  //--> Get from config file. 
             string Result = "";
             Regex re = new Regex(RegEx, RegexOptions.None);
 
