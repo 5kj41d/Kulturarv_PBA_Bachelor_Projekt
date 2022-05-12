@@ -4,9 +4,33 @@ using RabbitMQ.Client;
 
 public class Search_Consumer : DefaultBasicConsumer
 {
+	//TODO: Log: Id, Beskedinhold, bruger, tidspunktet, Log_årsag.
+
+	//TODO: Should not be hardcoded.
+	private const string UserName = "guest";
+    private const string Password = "guest";
+    private const string HostName = "localhost";
 	private readonly IModel _channel; 	
-	public Search_Consumer(IModel channel){
-		_channel = channel; 
+	public Search_Consumer()
+	{
+		Init(); 
+	}
+
+	private void Init()
+	{
+		ConnectionFactory connectionFactory = new ConnectionFactory
+            {
+                HostName = HostName,
+                UserName = UserName,
+                Password = Password,
+            };
+            var connection = connectionFactory.CreateConnection();
+            var _channel = connection.CreateModel();
+            // accept only one unack-ed message at a time
+            // uint prefetchSize, ushort prefetchCount, bool global
+            _channel.BasicQos(0, 1, false);
+            _channel.BasicConsume("search_consumer_queue", false, this);
+            Console.ReadLine();
 	}
 
     public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, 

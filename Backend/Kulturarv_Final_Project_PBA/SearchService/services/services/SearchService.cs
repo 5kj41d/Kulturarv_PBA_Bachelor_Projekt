@@ -1,5 +1,9 @@
-using System; 
+using System;
+using Microsoft.AspNetCore.Mvc;
 
+//https://stackoverflow.com/questions/71527891/versioning-in-c-sharp-asp-net-core
+[ApiVersion("1.0")] 
+//[ApiVersion("2.0")]
 public class Search_Service : Search_Service_IF
 {
     //TODO: Search for a ....
@@ -8,12 +12,10 @@ public class Search_Service : Search_Service_IF
     {
         Console.WriteLine("Search Service object init"); 
     }
-
     public void Search_By_Heritage_Type()
     {
         throw new NotImplementedException();
     }
-
     public void Search_By_Institution_Event()
     {
         throw new NotImplementedException();
@@ -33,4 +35,7 @@ public class Search_Service : Search_Service_IF
     {
         throw new NotImplementedException();
     }
+
+    //[MapToApiVersion("2.0")]
+    //Some method
 }

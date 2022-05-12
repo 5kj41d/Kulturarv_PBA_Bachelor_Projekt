@@ -15,22 +15,7 @@ namespace SearchService
         private const string HostName = "localhost";
         static void Main(string[] args)
         {
-            ConnectionFactory connectionFactory = new ConnectionFactory
-            {
-                HostName = HostName,
-                UserName = UserName,
-                Password = Password,
-            };
-            var connection = connectionFactory.CreateConnection();
-            var channel = connection.CreateModel();
-            // accept only one unack-ed message at a time
-            // uint prefetchSize, ushort prefetchCount, bool global
-
-            channel.BasicQos(0, 1, false);
-            Search_Consumer messageReceiver = new Search_Consumer(channel);
-            channel.BasicConsume("demoqueue", false, messageReceiver);
-            Console.ReadLine();
+            Search_Consumer _Consumer = new Search_Consumer(); 
         }
-    }
-        //Log: Id, Beskedinhold, bruger, tidspunktet, Log_årsag. 
+    } 
 }
