@@ -8,5 +8,4 @@ public class Search_Service : Search_Service_IF
     {
         Console.WriteLine("Search Service object init"); 
     }
-
 }
