@@ -28,6 +28,12 @@ namespace Mobile_Gateway
         {
 
             services.AddControllers();
+            services.AddApiVersioning(config =>
+            {   
+                config.DefaultApiVersion = new ApiVersion(1, 0);
+                config.AssumeDefaultVersionWhenUnspecified = true;
+                config.ReportApiVersions = true;
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mobile_Gateway", Version = "v1" });
