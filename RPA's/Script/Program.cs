@@ -6,6 +6,7 @@ using Neo4j.Driver;
 using System.Configuration;
 using System.Collections.Specialized;
 using Microsoft.Extensions.Configuration;
+using HtmlAgilityPack;
 
 namespace Script
 {
@@ -27,6 +28,7 @@ namespace Script
         private static IConfiguration _config; 
         static async Task Main(string[] args)   //username for Neo4J = args[0], Password for Neo4J = args[1]
         {
+            /*
             if(args.Length == 0)
             {
                 Console.WriteLine("Enter user and password");
@@ -39,6 +41,14 @@ namespace Script
             password = args[1];
             } 
             await InitAsync();
+            */
+            var doc = new HtmlAgilityPack.HtmlDocument();
+            doc.Load("C:\\Users\\fanes\\source\\repos\\Sk41d\\Kulturarv_PBA_Bachelor_Projekt\\RPA's\\Script\\TestDataExamples\\KulturarvTestDataExample.txt");
+            //var text = doc.DocumentNode.SelectSingleNode("//*comment()[contains(., 'Start free text for location')]").InnerText;
+
+            var text = doc.DocumentNode.SelectSingleNode("//*[@id='columnCenterDiv']/div[1]/div/table/tbody/tr[3]/td/font").InnerText;
+            //*[contains(@address,'Downing')]
+            Console.WriteLine(text);
         }
 
         //TODO: FIX: Error reading app settings (xml file). 
