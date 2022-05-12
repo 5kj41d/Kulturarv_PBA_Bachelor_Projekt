@@ -10,12 +10,9 @@ namespace SearchService
     #endregion
     class Program
     {
-        private const string UserName = "guest";
-        private const string Password = "guest";
-        private const string HostName = "localhost";
         static void Main(string[] args)
         {
-            Search_Consumer _Consumer = new Search_Consumer(); 
+            Search_Gatway_Request_Consumer _Consumer = new Search_Gatway_Request_Consumer(); 
         }
     } 
 }

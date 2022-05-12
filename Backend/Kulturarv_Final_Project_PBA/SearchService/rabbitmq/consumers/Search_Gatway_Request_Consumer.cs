@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using RabbitMQ.Client;
 
-public class Search_Consumer : DefaultBasicConsumer
+public class Search_Gatway_Request_Consumer : DefaultBasicConsumer
 {
 	//TODO: Log: Id, Beskedinhold, bruger, tidspunktet, Log_årsag.
 
@@ -11,7 +11,7 @@ public class Search_Consumer : DefaultBasicConsumer
     private const string Password = "guest";
     private const string HostName = "localhost";
 	private readonly IModel _channel; 	
-	public Search_Consumer()
+	public Search_Gatway_Request_Consumer()
 	{
 		Init(); 
 	}
