@@ -37,5 +37,6 @@ public class Search_Service : Search_Service_IF
     }
 
     //[MapToApiVersion("2.0")]
-    //Some method
+    //--> Take picture and sent. --> This should be validated?
+    //Safe information --> This should be validated?
 }
