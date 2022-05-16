@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -21,6 +22,7 @@ namespace Mobile_Gateway
 
         [Route("api/Search_Service_Controller/")]
         [HttpGet]
+        [Authorize]
         public IEnumerable<string> Get()
         {
             string routing_key = "Search_All"; 
@@ -33,6 +35,8 @@ namespace Mobile_Gateway
         }
 
         [Route("api/Search_Service_Controller/{type}")]
+        [HttpGet]
+        [Authorize]
         public IEnumerable<string> Get_Heritage_Type(string type)
         {
             return null; 
@@ -40,6 +44,7 @@ namespace Mobile_Gateway
 
         [Route("api/Search_Service_Controller/{timeage}")]
         [HttpGet]
+        [Authorize]
         public IEnumerable<string> Get_All_From_Time_Age(int age)
         {
             return null; 
@@ -47,6 +52,7 @@ namespace Mobile_Gateway
 
         [Route("api/Search_Service_Controller/{region}")]
         [HttpGet]
+        [Authorize]
         public IEnumerable<string> Get_All_From_Region(string region)
         {
             return null; 
