@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 namespace Mobile_Gateway
 {
     //Location, time age, heritage type, region, tilkoblet events. 
-
+    //Ressources: https://manage.auth0.com/dashboard/eu/dev-k24ialwx/applications/AzRrQU4RT74bFrFFnwzNa3UM6W3PEVJP/quickstart 
     //https://docs.microsoft.com/en-us/dotnet/architecture/microservices/architect-microservice-container-applications/direct-client-to-microservice-communication-versus-the-api-gateway-pattern
     [ApiController]
     [Route("[controller]")]

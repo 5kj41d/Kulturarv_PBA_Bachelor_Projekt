@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Auth0.AspNetCore.Authentication;
 using Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +14,8 @@ using Microsoft.OpenApi.Models;
 
 namespace Mobile_Gateway
 {
+    //Ressources: https://docs.microsoft.com/en-us/dotnet/architecture/microservices/secure-net-microservices-web-applications/  
+    //https://manage.auth0.com/dashboard/eu/dev-k24ialwx/applications/AzRrQU4RT74bFrFFnwzNa3UM6W3PEVJP/quickstart 
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -38,10 +41,27 @@ namespace Mobile_Gateway
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mobile_Gateway", Version = "v1" });
             });
 
+            //Auth0 and cookie configuration.
+            // Cookie configuration for HTTP to support cookies with SameSite=None
+            //services.ConfigureSameSiteNoneCookies();
+
+            // Cookie configuration for HTTPS
+            // services.Configure<CookiePolicyOptions>(options =>
+            // {
+            //    options.MinimumSameSitePolicy = SameSiteMode.None;
+            // });
+
+            services
+            .AddAuth0WebAppAuthentication(options => {
+                options.Domain = Configuration["Auth0:Domain"];
+                options.ClientId = Configuration["Auth0:ClientId"];
+            });
+
             //RabbitMQ configuration.
             services.Configure<RabbitMqConfiguration>(a => Configuration.GetSection(nameof(RabbitMqConfiguration)).Bind(a));
             services.AddSingleton<Rpc_sender_IF, Rpc_sender>();
 
+            //JWT configuration. 
             string domain = $"https://{Configuration["Auth0:Domain"]}/";
             services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
