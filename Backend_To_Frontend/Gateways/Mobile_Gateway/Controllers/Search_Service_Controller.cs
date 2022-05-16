@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Mobile_Gateway
 {
@@ -15,9 +16,11 @@ namespace Mobile_Gateway
     public class Search_Service_Controller : ControllerBase
     {
         private readonly ILogger<Search_Service_Controller> _logger;
-        public Search_Service_Controller(ILogger<Search_Service_Controller> logger)
+        private readonly IOptions<RabbitMqConfiguration> _configuration; 
+        public Search_Service_Controller(ILogger<Search_Service_Controller> logger, IOptions<RabbitMqConfiguration> options)
         {
             _logger = logger; 
+            _configuration = options;
         } 
 
         [Route("api/Search_Service_Controller/")]
@@ -26,13 +29,19 @@ namespace Mobile_Gateway
         [ApiVersion("1.0")]
         public IEnumerable<string> Get()
         {
-            string routing_key = "Search_All"; 
-            string message = "Get all"; 
-            Rpc_sender sender = new Rpc_sender(null, _logger);  //TODO: Fix this. 
+            string request_routing_key = "Search_All"; 
+            string request_message = "Get all"; 
+            Rpc_sender sender = new Rpc_sender(_configuration, _logger);  //TODO: Fix this. 
             
             //TODO: Check for JWTs.
-            
-            return null;  
+            //TODO: Error check if something goes wrong. 
+            Sent_Model sent_Model = new Sent_Model
+            {
+                message = request_message,
+                routing_key = request_routing_key
+            };
+            return sender.Sent_Message_To_Message_Bus_RPC(sent_Model);
+        
         }
 
         [Route("api/Search_Service_Controller/{type}")]

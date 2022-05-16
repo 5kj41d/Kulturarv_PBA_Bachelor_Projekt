@@ -2,7 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
-namespace authentication 
+namespace Authentication 
 {
     //Ressorce: https://auth0.com/docs/quickstart/backend/aspnet-core-webapi#configure-auth0-apis
     public class HasScopeHandler : AuthorizationHandler<Has_Scope_Requirements>

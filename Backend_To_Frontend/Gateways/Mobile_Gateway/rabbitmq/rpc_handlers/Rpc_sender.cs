@@ -1,17 +1,17 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
 public interface Rpc_sender_IF 
 {
-    public void Sent_Message_To_Message_Bus(Sent_Model sent_model);
+    public IEnumerable<string> Sent_Message_To_Message_Bus_RPC(Sent_Model sent_model);
 }
 
 public class Rpc_sender : Rpc_sender_IF
 {
     //TODO: Send the message to the relevant service.
-    private readonly IConnection _conn;
     private readonly ILogger _logger; 
     private readonly RabbitMqConfiguration _configuration; 
     public Rpc_sender(IOptions<RabbitMqConfiguration> options, ILogger logger)
@@ -24,9 +24,9 @@ public class Rpc_sender : Rpc_sender_IF
     /// Version 1. Takes a string of search message to be sent. Returns void. 
     /// </summary>
     /// param name="message" of string
-    public void Sent_Message_To_Message_Bus(Sent_Model sent_model)
+    public IEnumerable<string> Sent_Message_To_Message_Bus_RPC(Sent_Model sent_model)
     {
-        string coorelration_id = Guid.NewGuid().ToString();
+        string correlation_id = Guid.NewGuid().ToString();
         IConnection conn = null;
         IModel channel = null;  
         try{
@@ -36,7 +36,7 @@ public class Rpc_sender : Rpc_sender_IF
             IBasicProperties props = channel.CreateBasicProperties();
             props.ContentType = "text/plain";
             props.DeliveryMode = 2;
-            props.CorrelationId = coorelration_id; 
+            props.CorrelationId = correlation_id; 
             channel.BasicPublish("direct", sent_model.routing_key, props, messageBodyBytes);
         }
         catch(Exception e)
@@ -48,7 +48,8 @@ public class Rpc_sender : Rpc_sender_IF
             channel.Close();
             conn.Close();
         } 
-        //TODO: Wait for resonse. --> Return that value.  
+        //TODO: Wait for resonse. --> Return that value. --> 
+        return null;  
     }
 
     private IConnection Setup_Connection()
@@ -67,5 +68,15 @@ public class Rpc_sender : Rpc_sender_IF
             _logger.LogError(0, e, "Couldnt connect to RabbitMQ server", conn); 
         }
         return conn; 
+    }
+
+    /// <summary>
+    /// Only for test purpose.
+    /// </summary>
+    /// <returns>bool</returns>
+    public bool Test_Connection()
+    {
+        //TODO: Finish!
+        return true; 
     }
 }

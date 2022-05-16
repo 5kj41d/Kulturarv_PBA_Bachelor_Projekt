@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Authorization;
 
-namespace authentication 
+namespace Authentication 
 {
     //Ressource: https://auth0.com/docs/quickstart/backend/aspnet-core-webapi#configure-auth0-apis
     public class Has_Scope_Requirements : IAuthorizationRequirement
