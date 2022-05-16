@@ -1,43 +1,66 @@
-using System; 
+using System;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
-public class Rpc_sender : IDisposable
+public class Rpc_sender
 {
     //TODO: Send the message to the relevant service.
-    private readonly string _url; 
-    private readonly string _user; 
-    private readonly string _pass; 
-    private readonly string _vhost; 
-    private readonly string _hostName; 
-    private readonly string _uri; 
     private readonly IConnection _conn;
-    public Rpc_sender(RabbitMQ_Conection_Dependency_Model model)
+    private readonly ILogger _logger; 
+    private readonly RabbitMQ_Conection_Dependency_Model _model; 
+    public Rpc_sender(RabbitMQ_Conection_Dependency_Model model, ILogger logger)
     {
+        _model = model; 
+        _logger = logger; 
     }
 
     /// <summary> 
     /// Version 1. Takes a string of search message to be sent. Returns void. 
     /// </summary>
     /// param name="message" of string
-    public void Sent_Message_To_Message_Bus(string message)
+    public void Sent_Message_To_Message_Bus(Sent_Model sent_model)
     {
-        IConnection conn = Setup_Connection();
-    }
-    
-    private IConnection Setup_Connection()
-    {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.UserName = _user;
-        factory.Password = _pass;
-        factory.VirtualHost = _vhost;
-        factory.HostName = _hostName;
-        factory.Uri = new Uri(_uri); 
-        IConnection conn = factory.CreateConnection();
-        return conn; 
+        string coorelration_id = Guid.NewGuid().ToString();
+        IConnection conn = null;
+        IModel channel = null;  
+        try{
+            conn = Setup_Connection();
+            channel = conn.CreateModel();
+            byte[] messageBodyBytes = System.Text.Encoding.UTF8.GetBytes(sent_model.message);
+            IBasicProperties props = channel.CreateBasicProperties();
+            props.ContentType = "text/plain";
+            props.DeliveryMode = 2;
+            props.CorrelationId = coorelration_id; 
+            channel.BasicPublish("direct", sent_model.routing_key, props, messageBodyBytes);
+        }
+        catch(Exception e)
+        {
+            _logger.LogError(0, e, "Couldnt sent message to rabbitMQ", sent_model);
+        }
+        finally
+        {
+            channel.Close();
+            conn.Close();
+        } 
+        //TODO: Wait for resonse. --> Return that value.  
     }
 
-    public void Dispose()
+    private IConnection Setup_Connection()
     {
-        throw new NotImplementedException();
+        IConnection conn = null; 
+        try{
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.UserName = _model._user;
+            factory.Password = _model._pass;
+            factory.VirtualHost = _model._vhost;
+            factory.HostName = _model._hostName;
+            factory.Uri = new Uri(_model._uri); 
+            conn = factory.CreateConnection();
+        }
+        catch(Exception e)
+        {
+            _logger.LogError(0, e, "Couldnt connect to RabbitMQ server", conn); 
+        }
+        return conn; 
     }
 }

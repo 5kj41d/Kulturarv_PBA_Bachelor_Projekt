@@ -23,6 +23,12 @@ namespace Mobile_Gateway
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            string routing_key = "Search_All"; 
+            string message = "Get all"; 
+            Rpc_sender sender = new Rpc_sender(null, _logger);  //TODO: Fix this. 
+            
+            //TODO: Check for JWTs.
+            
             return null;  
         }
 
