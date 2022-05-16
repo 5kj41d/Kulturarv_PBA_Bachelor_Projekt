@@ -1,16 +1,22 @@
 using System;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
-public class Rpc_sender
+public interface Rpc_sender_IF 
+{
+    public void Sent_Message_To_Message_Bus(Sent_Model sent_model);
+}
+
+public class Rpc_sender : Rpc_sender_IF
 {
     //TODO: Send the message to the relevant service.
     private readonly IConnection _conn;
     private readonly ILogger _logger; 
-    private readonly RabbitMQ_Conection_Dependency_Model _model; 
-    public Rpc_sender(RabbitMQ_Conection_Dependency_Model model, ILogger logger)
+    private readonly RabbitMqConfiguration _configuration; 
+    public Rpc_sender(IOptions<RabbitMqConfiguration> options, ILogger logger)
     {
-        _model = model; 
+        _configuration = options.Value; 
         _logger = logger; 
     }
 
@@ -50,11 +56,10 @@ public class Rpc_sender
         IConnection conn = null; 
         try{
             ConnectionFactory factory = new ConnectionFactory();
-            factory.UserName = _model._user;
-            factory.Password = _model._pass;
-            factory.VirtualHost = _model._vhost;
-            factory.HostName = _model._hostName;
-            factory.Uri = new Uri(_model._url); 
+            factory.UserName = _configuration._user;
+            factory.Password = _configuration._pass;
+            factory.VirtualHost = _configuration._vhost;
+            factory.HostName = _configuration._hostName;
             conn = factory.CreateConnection();
         }
         catch(Exception e)

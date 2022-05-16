@@ -38,6 +38,10 @@ namespace Mobile_Gateway
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mobile_Gateway", Version = "v1" });
             });
 
+            //RabbitMQ configuration.
+            services.Configure<RabbitMqConfiguration>(a => Configuration.GetSection(nameof(RabbitMqConfiguration)).Bind(a));
+            services.AddSingleton<Rpc_sender_IF, Rpc_sender>();
+
             string domain = $"https://{Configuration["Auth0:Domain"]}/";
             services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -23,6 +23,7 @@ namespace Mobile_Gateway
         [Route("api/Search_Service_Controller/")]
         [HttpGet]
         [Authorize]
+        [ApiVersion("1.0")]
         public IEnumerable<string> Get()
         {
             string routing_key = "Search_All"; 
@@ -37,6 +38,7 @@ namespace Mobile_Gateway
         [Route("api/Search_Service_Controller/{type}")]
         [HttpGet]
         [Authorize]
+        [ApiVersion("1.0")]
         public IEnumerable<string> Get_Heritage_Type(string type)
         {
             return null; 
@@ -45,6 +47,7 @@ namespace Mobile_Gateway
         [Route("api/Search_Service_Controller/{timeage}")]
         [HttpGet]
         [Authorize]
+        [ApiVersion("1.0")]
         public IEnumerable<string> Get_All_From_Time_Age(int age)
         {
             return null; 
@@ -53,6 +56,7 @@ namespace Mobile_Gateway
         [Route("api/Search_Service_Controller/{region}")]
         [HttpGet]
         [Authorize]
+        [ApiVersion("1.0")]
         public IEnumerable<string> Get_All_From_Region(string region)
         {
             return null; 
