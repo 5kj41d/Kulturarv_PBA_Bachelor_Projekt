@@ -54,7 +54,7 @@ public class Rpc_sender
             factory.Password = _model._pass;
             factory.VirtualHost = _model._vhost;
             factory.HostName = _model._hostName;
-            factory.Uri = new Uri(_model._uri); 
+            factory.Uri = new Uri(_model._url); 
             conn = factory.CreateConnection();
         }
         catch(Exception e)
