@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 
+namespace rabbitmq 
+{
 public class RabbitMqConfiguration
 {    
     public string _user {get; set;} 
@@ -7,4 +9,5 @@ public class RabbitMqConfiguration
     public string _vhost {get; set;} 
     public string _hostName {get; set;} 
     public List<string> _routing_keys {get; set;}
+}
 }

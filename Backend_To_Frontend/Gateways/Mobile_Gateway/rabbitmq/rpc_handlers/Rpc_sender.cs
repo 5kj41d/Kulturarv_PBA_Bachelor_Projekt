@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
+namespace rabbitmq
+{
 public interface Rpc_sender_IF 
 {
     public IEnumerable<string> Sent_Message_To_Message_Bus_RPC(Sent_Model sent_model);
@@ -78,5 +80,6 @@ public class Rpc_sender : Rpc_sender_IF
     {
         //TODO: Finish!
         return true; 
+    }
     }
 }

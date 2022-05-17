@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using rabbitmq;
 
 namespace Mobile_Gateway
 {
@@ -32,7 +33,7 @@ namespace Mobile_Gateway
         [ApiVersion("1.0")]
         public IEnumerable<string> Get()
         {
-            Rpc_sender sender = new Rpc_sender(_configuration, _logger);  //TODO: Fix this. 
+            Rpc_sender_IF sender = new Rpc_sender(_configuration, _logger);  //TODO: Fix this. 
             
             //TODO: Check for JWTs.
             //TODO: Error check if something goes wrong. 
@@ -47,7 +48,7 @@ namespace Mobile_Gateway
         [ApiVersion("1.0")]
         public IEnumerable<string> Get_Heritage_Type(string type)
         {
-            Rpc_sender sender = new Rpc_sender(_configuration, _logger);
+            Rpc_sender_IF sender = new Rpc_sender(_configuration, _logger);
             //TODO: Check for JWTs.
             //TODO: Error check if something goes wrong.
             Sent_Model sent_Model = new Sent_Model(_configuration.Value._routing_keys[0], type);
@@ -60,7 +61,7 @@ namespace Mobile_Gateway
         [ApiVersion("1.0")]
         public IEnumerable<string> Get_All_From_Time_Age(int age)
         {
-            Rpc_sender sender = new Rpc_sender(_configuration, _logger);
+            Rpc_sender_IF sender = new Rpc_sender(_configuration, _logger);
             //TODO: Check for JWTs.
             //TODO: Error check if something goes wrong.
             Sent_Model sent_Model = new Sent_Model(_configuration.Value._routing_keys[0], age.ToString());
@@ -73,7 +74,7 @@ namespace Mobile_Gateway
         [ApiVersion("1.0")]
         public IEnumerable<string> Get_All_From_Region(string region)
         {
-            Rpc_sender sender = new Rpc_sender(_configuration, _logger);
+            Rpc_sender_IF sender = new Rpc_sender(_configuration, _logger);
             //TODO: Check for JWTs.
             //TODO: Error check if something goes wrong.
             Sent_Model sent_Model = new Sent_Model(_configuration.Value._routing_keys[0], region);
