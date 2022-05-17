@@ -24,6 +24,8 @@ namespace Mobile_Gateway
             _configuration = options;
         } 
 
+        #region Version 1 API surface methods.
+
         [Route("api/Search_Service_Controller/")]
         [HttpGet]
         //[Authorize]
@@ -80,6 +82,7 @@ namespace Mobile_Gateway
 
         //TODO: Get all from associated events.
         //Method goes here --> 
+        #endregion
 
     }
 }
