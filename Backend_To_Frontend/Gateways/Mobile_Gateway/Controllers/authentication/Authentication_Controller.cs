@@ -1,4 +1,9 @@
-using System; 
+using System;
+using System.Threading.Tasks;
+using Auth0.AspNetCore.Authentication;
+//using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -15,16 +20,20 @@ namespace Controllers
 
         [Route("")]
         [HttpPost]
-        public void Login()
+        public async Task Login()
         {
-            //TODO: Sent message to auth service message bus. 
+            var authenticationProperties = new LoginAuthenticationPropertiesBuilder().Build(); 
+            //await HttpContext.ChallengeAsync(Auth0Constants.AuthenticationScheme, authenticationProperties); 
         }
 
         [Route("")]
         [HttpPost]
-        public void Logout()
+        [Authorize]
+        public async void Logout()
         {
-
+            var authenticationProperties = new LogoutAuthenticationPropertiesBuilder().Build();
+            //-->await HttpContext.SignOutAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
+            //await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme); 
         }
     }
 }

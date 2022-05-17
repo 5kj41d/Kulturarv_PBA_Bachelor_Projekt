@@ -34,9 +34,9 @@ public class Rpc_sender : Rpc_sender_IF
             channel = conn.CreateModel();
             byte[] messageBodyBytes = System.Text.Encoding.UTF8.GetBytes(sent_model.message);
             IBasicProperties props = channel.CreateBasicProperties();
-            props.ContentType = "text/plain";
-            props.DeliveryMode = 2;
-            props.CorrelationId = correlation_id; 
+                props.ContentType = "text/plain";
+                props.DeliveryMode = 2;
+                props.CorrelationId = correlation_id; 
             channel.BasicPublish("direct", sent_model.routing_key, props, messageBodyBytes);
         }
         catch(Exception e)

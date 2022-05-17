@@ -29,16 +29,14 @@ namespace Mobile_Gateway
         [ApiVersion("1.0")]
         public IEnumerable<string> Get()
         {
-            string request_routing_key = "Search_All"; 
-            string request_message = "Get all"; 
             Rpc_sender sender = new Rpc_sender(_configuration, _logger);  //TODO: Fix this. 
             
             //TODO: Check for JWTs.
             //TODO: Error check if something goes wrong. 
             Sent_Model sent_Model = new Sent_Model
             {
-                message = request_message,
-                routing_key = request_routing_key
+                message = "Get_All",
+                routing_key = "Search"
             };
             return sender.Sent_Message_To_Message_Bus_RPC(sent_Model);
         
@@ -50,7 +48,15 @@ namespace Mobile_Gateway
         [ApiVersion("1.0")]
         public IEnumerable<string> Get_Heritage_Type(string type)
         {
-            return null; 
+            Rpc_sender sender = new Rpc_sender(_configuration, _logger);
+            //TODO: Check for JWTs.
+            //TODO: Error check if something goes wrong.
+            Sent_Model sent_Model = new Sent_Model
+            {
+                message = type,
+                routing_key = "Search"
+            };
+            return sender.Sent_Message_To_Message_Bus_RPC(sent_Model); 
         }
 
         [Route("api/Search_Service_Controller/{timeage}")]
@@ -59,7 +65,15 @@ namespace Mobile_Gateway
         [ApiVersion("1.0")]
         public IEnumerable<string> Get_All_From_Time_Age(int age)
         {
-            return null; 
+            Rpc_sender sender = new Rpc_sender(_configuration, _logger);
+            //TODO: Check for JWTs.
+            //TODO: Error check if something goes wrong.
+            Sent_Model sent_Model = new Sent_Model
+            {
+                message = age.ToString(),
+                routing_key = "Search"
+            };
+            return sender.Sent_Message_To_Message_Bus_RPC(sent_Model); 
         }
 
         [Route("api/Search_Service_Controller/{region}")]
@@ -68,7 +82,15 @@ namespace Mobile_Gateway
         [ApiVersion("1.0")]
         public IEnumerable<string> Get_All_From_Region(string region)
         {
-            return null; 
+            Rpc_sender sender = new Rpc_sender(_configuration, _logger);
+            //TODO: Check for JWTs.
+            //TODO: Error check if something goes wrong.
+            Sent_Model sent_Model = new Sent_Model
+            {
+                message = region,
+                routing_key = "Search"
+            };
+            return sender.Sent_Message_To_Message_Bus_RPC(sent_Model);  
         }
 
         //TODO: Get all from associated events.

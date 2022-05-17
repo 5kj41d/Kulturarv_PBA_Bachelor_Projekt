@@ -42,20 +42,17 @@ namespace Mobile_Gateway
             });
 
             //Auth0 and cookie configuration.
-            // Cookie configuration for HTTP to support cookies with SameSite=None
-            //services.ConfigureSameSiteNoneCookies();
-
-            // Cookie configuration for HTTPS
-            // services.Configure<CookiePolicyOptions>(options =>
-            // {
-            //    options.MinimumSameSitePolicy = SameSiteMode.None;
-            // });
-
             services
             .AddAuth0WebAppAuthentication(options => {
                 options.Domain = Configuration["Auth0:Domain"];
                 options.ClientId = Configuration["Auth0:ClientId"];
-            });
+                options.ClientSecret = Configuration["Auth0:ClientSecret"];
+            }).WithAccessToken(options => 
+                {
+                    options.Audience = Configuration["Auth0:Audience"];
+                    options.UseRefreshTokens = true; //Refresh token when it expires before session is over.
+                }
+            );
 
             //RabbitMQ configuration.
             services.Configure<RabbitMqConfiguration>(a => Configuration.GetSection(nameof(RabbitMqConfiguration)).Bind(a));
