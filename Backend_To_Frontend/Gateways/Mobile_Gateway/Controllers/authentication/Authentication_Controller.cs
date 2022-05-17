@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Controllers
 {
+    [ApiVersion("1.0")]
     public class Authentication_Controller 
     {
         private readonly ILogger _logger; 
@@ -20,6 +21,7 @@ namespace Controllers
 
         [Route("")]
         [HttpPost]
+        [ApiVersion("1.0")]
         public async Task Login()
         {
             var authenticationProperties = new LoginAuthenticationPropertiesBuilder().Build(); 
@@ -29,6 +31,7 @@ namespace Controllers
         [Route("")]
         [HttpPost]
         [Authorize]
+        [ApiVersion("1.0")]
         public async void Logout()
         {
             var authenticationProperties = new LogoutAuthenticationPropertiesBuilder().Build();
