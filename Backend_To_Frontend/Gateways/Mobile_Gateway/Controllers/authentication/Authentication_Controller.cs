@@ -20,6 +20,7 @@ namespace Controllers
         }
 
         //TODO: When needed, finish the authentication part. 
+        //TODO: Should have a microservice to handle this instead of using http requests to the auth0 server. --> Destroys the purpose of asynchronous design. 
         [Route("")]
         [HttpPost]
         [ApiVersion("1.0")]
