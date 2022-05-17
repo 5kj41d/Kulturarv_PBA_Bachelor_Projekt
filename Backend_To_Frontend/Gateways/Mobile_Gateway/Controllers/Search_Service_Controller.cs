@@ -26,7 +26,7 @@ namespace Mobile_Gateway
 
         [Route("api/Search_Service_Controller/")]
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         [ApiVersion("1.0")]
         public IEnumerable<string> Get()
         {
@@ -41,7 +41,7 @@ namespace Mobile_Gateway
 
         [Route("api/Search_Service_Controller/{type}")]
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         [ApiVersion("1.0")]
         public IEnumerable<string> Get_Heritage_Type(string type)
         {
@@ -54,7 +54,7 @@ namespace Mobile_Gateway
 
         [Route("api/Search_Service_Controller/{timeage}")]
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         [ApiVersion("1.0")]
         public IEnumerable<string> Get_All_From_Time_Age(int age)
         {
@@ -67,7 +67,7 @@ namespace Mobile_Gateway
 
         [Route("api/Search_Service_Controller/{region}")]
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         [ApiVersion("1.0")]
         public IEnumerable<string> Get_All_From_Region(string region)
         {
