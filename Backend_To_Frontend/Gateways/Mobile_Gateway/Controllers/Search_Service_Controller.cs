@@ -15,6 +15,7 @@ namespace Mobile_Gateway
     [ApiVersion("1.0")]
     public class Search_Service_Controller : ControllerBase
     {
+        //TODO: Make the routing key access more clean. And the message part of the sent objects. 
         private readonly ILogger<Search_Service_Controller> _logger;
         private readonly IOptions<RabbitMqConfiguration> _configuration; 
         public Search_Service_Controller(ILogger<Search_Service_Controller> logger, IOptions<RabbitMqConfiguration> options)
@@ -33,13 +34,9 @@ namespace Mobile_Gateway
             
             //TODO: Check for JWTs.
             //TODO: Error check if something goes wrong. 
-            Sent_Model sent_Model = new Sent_Model
-            {
-                message = "Get_All",
-                routing_key = "Search"
-            };
+
+            Sent_Model sent_Model = new Sent_Model(_configuration.Value._routing_keys[0], "Get_All");
             return sender.Sent_Message_To_Message_Bus_RPC(sent_Model);
-        
         }
 
         [Route("api/Search_Service_Controller/{type}")]
@@ -51,11 +48,7 @@ namespace Mobile_Gateway
             Rpc_sender sender = new Rpc_sender(_configuration, _logger);
             //TODO: Check for JWTs.
             //TODO: Error check if something goes wrong.
-            Sent_Model sent_Model = new Sent_Model
-            {
-                message = type,
-                routing_key = "Search"
-            };
+            Sent_Model sent_Model = new Sent_Model(_configuration.Value._routing_keys[0], type);
             return sender.Sent_Message_To_Message_Bus_RPC(sent_Model); 
         }
 
@@ -68,11 +61,7 @@ namespace Mobile_Gateway
             Rpc_sender sender = new Rpc_sender(_configuration, _logger);
             //TODO: Check for JWTs.
             //TODO: Error check if something goes wrong.
-            Sent_Model sent_Model = new Sent_Model
-            {
-                message = age.ToString(),
-                routing_key = "Search"
-            };
+            Sent_Model sent_Model = new Sent_Model(_configuration.Value._routing_keys[0], age.ToString());
             return sender.Sent_Message_To_Message_Bus_RPC(sent_Model); 
         }
 
@@ -85,11 +74,7 @@ namespace Mobile_Gateway
             Rpc_sender sender = new Rpc_sender(_configuration, _logger);
             //TODO: Check for JWTs.
             //TODO: Error check if something goes wrong.
-            Sent_Model sent_Model = new Sent_Model
-            {
-                message = region,
-                routing_key = "Search"
-            };
+            Sent_Model sent_Model = new Sent_Model(_configuration.Value._routing_keys[0], region);
             return sender.Sent_Message_To_Message_Bus_RPC(sent_Model);  
         }
 

@@ -32,12 +32,12 @@ public class Rpc_sender : Rpc_sender_IF
         try{
             conn = Setup_Connection();
             channel = conn.CreateModel();
-            byte[] messageBodyBytes = System.Text.Encoding.UTF8.GetBytes(sent_model.message);
+            byte[] messageBodyBytes = System.Text.Encoding.UTF8.GetBytes(sent_model._message);
             IBasicProperties props = channel.CreateBasicProperties();
                 props.ContentType = "text/plain";
                 props.DeliveryMode = 2;
                 props.CorrelationId = correlation_id; 
-            channel.BasicPublish("direct", sent_model.routing_key, props, messageBodyBytes);
+            channel.BasicPublish("direct", sent_model._routing_key, props, messageBodyBytes);
         }
         catch(Exception e)
         {
