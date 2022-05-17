@@ -4,38 +4,60 @@ namespace Mobile_Gateway_Test_Project;
 
 public class Message_Sending_Tests
 {
-    #region Version 1 tests
-    struct Valid_Sent_Model
+    #region Version 1 tests for search service controller. 
+    private const string Routing_key = "Search";
+    private struct Valid_Sent_Model
     {
-        string routing_key;
-        string message;
+        public Valid_Sent_Model(string routing_key, string message)
+        {
+            _routing_key = routing_key; 
+            _message = message; 
+        }
+        string _routing_key {get; set;}
+        string _message {get; set;}
     }
-    struct Invalid_Sent_Model
+    private struct Invalid_Sent_Model
     {
-        string routing_key;
-        string message; 
+        public Invalid_Sent_Model(string routing_key, string message)
+        {
+            _routing_key = routing_key; 
+            _message = message; 
+        }
+        string _routing_key {get; set;}
+        string _message {get; set;}
         //Something odd should be used.
     }
     [Fact]
     public void Test_Rpc_Get_All()
     {
-
+        //Arrange
+        Valid_Sent_Model valid_Sent_Model = new Valid_Sent_Model(Routing_key,"Get_All");
+        //Act
+        
+        //Assert
     }
     [Fact]
     public void Test_Rpc_Get_By_Region()
     {
-
+        //Arrange
+        //Act
+        //Assert
     }
     [Fact]
     public void Test_Rpc_Get_By_Timeage()
     {
-        
+        //Arrange
+        //Act
+        //Assert
     }
     [Fact]
     public void Test_Rpc_Get_By_Heritage_Type()
     {
-        
+        //Arrange
+        //Act
+        //Assert
     }
-    //Test for invalid inputs. 
+
+    //TODO: Test for invalid inputs. 
     #endregion
 }
