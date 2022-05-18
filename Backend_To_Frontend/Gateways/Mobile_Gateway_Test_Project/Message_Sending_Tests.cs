@@ -2,8 +2,8 @@ using Xunit;
 using rabbitmq;
 using Moq; 
 
-namespace Mobile_Gateway_Test_Project;
-
+namespace Mobile_Gateway_Test_Project
+{
 public class Message_Sending_Tests
 {
     #region Version 1 tests for search service controller. --> RabbitMQ Classes for now. 
@@ -35,9 +35,9 @@ public class Message_Sending_Tests
     {
         //Arrange
         Valid_Sent_Model valid_Sent_Model = new Valid_Sent_Model(Routing_key,"Get_All");
-            //var mock_rabbitmq = new Mock<>
+        var mock_rabbitmq = new Mock<Rpc_sender_IF>(); 
         //Act
-            //Rpc_sender_IF rpc_Sender = new Rpc_sender();
+        mock_rabbitmq.
         //Assert
     }
     [Fact]
@@ -65,4 +65,5 @@ public class Message_Sending_Tests
     //TODO: Test for invalid inputs. 
     ///////////////////// Tests end /////////////////////
     #endregion
+    }
 }

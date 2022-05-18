@@ -6,10 +6,12 @@ using RabbitMQ.Client;
 
 namespace rabbitmq
 {
+//Interface 
 public interface Rpc_sender_IF 
 {
     public IEnumerable<string> Sent_Message_To_Message_Bus_RPC(Sent_Model sent_model);
 }
+/////
 
 public class Rpc_sender : Rpc_sender_IF
 {
