@@ -1,6 +1,6 @@
 using Xunit;
-using rabbitmq;
-using Moq; 
+using Moq;
+using System;
 
 namespace Mobile_Gateway_Test_Project
 {
@@ -35,9 +35,8 @@ public class Message_Sending_Tests
     {
         //Arrange
         Valid_Sent_Model valid_Sent_Model = new Valid_Sent_Model(Routing_key,"Get_All");
-        var mock_rabbitmq = new Mock<Rpc_sender_IF>(); 
-        //Act
-        mock_rabbitmq.
+        //var mock_rabbitmq = new Mock<Rpc_sender_IF>(); 
+        //Act 
         //Assert
     }
     [Fact]
