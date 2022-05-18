@@ -12,7 +12,7 @@ namespace SearchService
     {
         static void Main(string[] args)
         {
-            Search_Gatway_Request_Consumer _Consumer = new Search_Gatway_Request_Consumer(); 
+            Search_Rpc search_Rpc = new Search_Rpc(); 
         }
     } 
 }

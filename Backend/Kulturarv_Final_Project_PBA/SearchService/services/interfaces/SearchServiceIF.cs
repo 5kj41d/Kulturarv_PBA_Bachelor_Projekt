@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 public interface Search_Service_IF
 {
     public void Search_By_Region();
