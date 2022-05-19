@@ -8,6 +8,7 @@ public class Search_Service : Search_Service_IF
 {
     //TODO: Search for a ....
     //TODO: 
+    #region Version 1. 
     public Search_Service()
     {
         Console.WriteLine("Search Service object init"); 
@@ -39,4 +40,5 @@ public class Search_Service : Search_Service_IF
     //[MapToApiVersion("2.0")]
     //--> Take picture and sent. --> This should be validated?
     //Safe information --> This should be validated?
+    #endregion
 }
