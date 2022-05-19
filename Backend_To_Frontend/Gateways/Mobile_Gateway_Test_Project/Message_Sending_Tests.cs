@@ -54,6 +54,7 @@ public class Message_Sending_Tests
         //Arrange
         //Act
         //Assert
+        Console.WriteLine("Working!"); 
     }
     [Fact]
     public void Test_Rpc_Get_By_Heritage_Type()
