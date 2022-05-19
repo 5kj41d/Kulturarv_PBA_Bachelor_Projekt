@@ -1,6 +1,7 @@
 using Xunit;
 using Moq;
-using System;   
+using System; 
+using Mobile_Gateway.rabbitmq;
 
 namespace Mobile_Gateway_Test_Project
 {
@@ -28,6 +29,7 @@ public class Message_Sending_Tests
         string _routing_key {get; set;}
         string _message {get; set;}
         //Something odd should be used.
+        
     }
     ///////////////////// Tests starts /////////////////////
     [Fact]
@@ -35,7 +37,7 @@ public class Message_Sending_Tests
     {
         //Arrange
         Valid_Sent_Model valid_Sent_Model = new Valid_Sent_Model(Routing_key,"Get_All");
-        //var mock_rabbitmq = new Mock<Rpc_sender_IF>(); 
+        var mock_rabbitmq = new Mock<Rpc_sender_IF>(); 
         //Act 
         //Assert
     }

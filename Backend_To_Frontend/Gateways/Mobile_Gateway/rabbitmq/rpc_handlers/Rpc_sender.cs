@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
-namespace rabbitmq
+namespace Mobile_Gateway.rabbitmq
 {
 //Interface 
 public interface Rpc_sender_IF 

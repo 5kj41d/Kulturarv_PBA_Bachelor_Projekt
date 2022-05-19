@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace rabbitmq 
+namespace Mobile_Gateway.rabbitmq 
 {
 public class RabbitMqConfiguration
 {    
