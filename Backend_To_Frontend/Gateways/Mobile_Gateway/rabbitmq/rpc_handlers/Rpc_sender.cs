@@ -85,6 +85,7 @@ public class Rpc_sender : Rpc_sender_IF
         catch(Exception e)
         {
             _logger.LogError(0, e, "Couldnt sent message to rabbitMQ", sent_model);
+            return "Not Valid!";
         }
         finally
         {
