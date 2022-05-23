@@ -1,34 +1,73 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using System.Collections.Concurrent;
+using System.Text; 
 
 namespace Mobile_Gateway.rabbitmq
 {
 //Interface 
 public interface Rpc_sender_IF 
 {
-    public IEnumerable<string> Sent_Message_To_Message_Bus_RPC(Sent_Model sent_model);
+    public string Sent_Message_To_Message_Bus_RPC(Sent_Model sent_model);
+    public bool Test_Connection();
 }
 /////
 
 public class Rpc_sender : Rpc_sender_IF
 {
-    //TODO: Send the message to the relevant service.
     private readonly ILogger _logger; 
     private readonly RabbitMqConfiguration _configuration; 
+    private string replyQueueName;
+    private readonly EventingBasicConsumer consumer;
+    private readonly BlockingCollection<string> respQueue = new BlockingCollection<string>();
+
     public Rpc_sender(IOptions<RabbitMqConfiguration> options, ILogger logger)
     {
         _configuration = options.Value; 
         _logger = logger; 
+        Init(); 
+    }
+
+    /// <summary>
+    /// Initiate consumer/response channel. 
+    /// </summary>
+    private void Init()
+    {
+        IModel channel; 
+        var conn = Setup_Connection();
+        channel = conn.CreateModel();
+        replyQueueName = channel.QueueDeclare().QueueName;
+        var consumer = new EventingBasicConsumer(channel);
+
+        IBasicProperties props = channel.CreateBasicProperties();
+        var correlationId = Guid.NewGuid().ToString();
+        props.CorrelationId = correlationId;
+        props.ReplyTo = replyQueueName;
+
+        consumer.Received += (model, ea) =>
+        {
+            var body = ea.Body.ToArray();
+            var response = Encoding.UTF8.GetString(body);
+            if (ea.BasicProperties.CorrelationId == correlationId)
+            {
+                respQueue.Add(response);
+            }
+        };
+
+        channel.BasicConsume(
+            consumer: consumer,
+            queue: replyQueueName,
+            autoAck: true);
     }
 
     /// <summary> 
     /// Version 1. Takes a string of search message to be sent. Returns void. 
     /// </summary>
     /// param name="message" of string
-    public IEnumerable<string> Sent_Message_To_Message_Bus_RPC(Sent_Model sent_model)
+    public string Sent_Message_To_Message_Bus_RPC(Sent_Model sent_model)
     {
         string correlation_id = Guid.NewGuid().ToString();
         IConnection conn = null;
@@ -53,9 +92,13 @@ public class Rpc_sender : Rpc_sender_IF
             conn.Close();
         } 
         //TODO: Wait for resonse. --> Return that value. --> 
-        return null;  
+        return respQueue.Take();  
     }
 
+    /// <summary>
+    /// Setup connection to RabbitMQ.
+    /// </summary>
+    /// <returns>IConnection object</returns>
     private IConnection Setup_Connection()
     {
         IConnection conn = null; 
@@ -75,12 +118,30 @@ public class Rpc_sender : Rpc_sender_IF
     }
 
     /// <summary>
-    /// Only for test purpose.
+    /// Only for test purpose. Code duplication. 
     /// </summary>
-    /// <returns>bool</returns>
+    /// <returns>Boolean</returns>
     public bool Test_Connection()
     {
-        //TODO: Finish!
+        IConnection conn = null;
+        IModel channel = null; 
+        try
+        {
+            conn = Setup_Connection();
+            channel = conn.CreateModel();
+            byte[] messageBodyBytes = System.Text.Encoding.UTF8.GetBytes("TEST!");
+            IBasicProperties props = channel.CreateBasicProperties();
+                props.ContentType = "text/plain";
+                props.DeliveryMode = 2;
+            channel.BasicPublish("direct", "Search", props, messageBodyBytes);
+            conn.Close(); 
+            channel.Close(); 
+        }
+        catch(Exception)
+        {
+            Console.WriteLine("Couldnt sent message to RabbitMQ!");
+            return false; 
+        } 
         return true; 
     }
     }
