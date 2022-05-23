@@ -31,7 +31,7 @@ namespace Mobile_Gateway
         [HttpGet]
         //[Authorize]
         [ApiVersion("1.0")]
-        public IEnumerable<string> Get()
+        public string Get()
         {
             Rpc_sender_IF sender = new Rpc_sender(_configuration, _logger);  //TODO: Fix this. 
             
@@ -46,7 +46,7 @@ namespace Mobile_Gateway
         [HttpGet]
         //[Authorize]
         [ApiVersion("1.0")]
-        public IEnumerable<string> Get_Heritage_Type(string type)
+        public string Get_Heritage_Type(string type)
         {
             Rpc_sender_IF sender = new Rpc_sender(_configuration, _logger);
             //TODO: Check for JWTs.
@@ -59,7 +59,7 @@ namespace Mobile_Gateway
         [HttpGet]
         //[Authorize]
         [ApiVersion("1.0")]
-        public IEnumerable<string> Get_All_From_Time_Age(int age)
+        public string Get_All_From_Time_Age(int age)
         {
             Rpc_sender_IF sender = new Rpc_sender(_configuration, _logger);
             //TODO: Check for JWTs.
@@ -72,7 +72,7 @@ namespace Mobile_Gateway
         [HttpGet]
         //[Authorize]
         [ApiVersion("1.0")]
-        public IEnumerable<string> Get_All_From_Region(string region)
+        public string Get_All_From_Region(string region)
         {
             Rpc_sender_IF sender = new Rpc_sender(_configuration, _logger);
             //TODO: Check for JWTs.
