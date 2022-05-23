@@ -45,7 +45,7 @@ namespace Mobile_Gateway_Test_Project
         #region Version 1 tests for search service controller. --> RabbitMQ Classes for now.
        private const string Routing_key = "Search";
        private readonly TestsFixture _testsFixture; 
-       private Message_Sending_Tests(TestsFixture testsFixture)
+       public Message_Sending_Tests(TestsFixture testsFixture)
        {
            _testsFixture = testsFixture; //Get data from testsfixture. 
        }
@@ -112,7 +112,7 @@ namespace Mobile_Gateway_Test_Project
         }
 
         [Fact]
-        public void Test_Rc_Get_By_Heritage_Type_Burial_Mound()
+        public void Test_Rpc_Get_By_Heritage_Type_Burial_Mound()
         {
             //Arrange
             Sent_Model sent_Model = new Sent_Model(Routing_key, "Gravhøj");
@@ -175,6 +175,9 @@ namespace Mobile_Gateway_Test_Project
         public void Test_Rpc_Connection_To_RabbitMQ()
         {
             //TODO: get configs from TestFixture. 
+            Rpc_sender rpc_Sender = new Rpc_sender(_testsFixture._configuration, _testsFixture._logger);
+            var result = rpc_Sender.Test_Connection();  
+            Assert.True(result);
         }
         ///////////////////// Tests end /////////////////////
     #endregion
