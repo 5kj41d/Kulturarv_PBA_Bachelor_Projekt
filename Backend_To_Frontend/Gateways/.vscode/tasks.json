@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Mobile_Gateway.csproj",
+                "${workspaceFolder}/Mobile_Gateway/Mobile_Gateway.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/Mobile_Gateway.csproj",
+                "${workspaceFolder}/Mobile_Gateway/Mobile_Gateway.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/Mobile_Gateway.csproj"
+                "${workspaceFolder}/Mobile_Gateway/Mobile_Gateway.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

@@ -9,9 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using rabbitmq;
+using Mobile_Gateway.rabbitmq;
 
 namespace Mobile_Gateway
 {
@@ -41,6 +42,11 @@ namespace Mobile_Gateway
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mobile_Gateway", Version = "v1" });
             });
+
+            //Add Logging DI service:
+            var serviceProvider = services.BuildServiceProvider(); 
+            var logger = serviceProvider.GetService<ILogger<Search_Service_Controller>>();
+            services.AddSingleton(typeof(ILogger), logger); 
 
             //Auth0 and cookie configuration.
             services

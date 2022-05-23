@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using rabbitmq;
+using Mobile_Gateway.rabbitmq;
 
 namespace Mobile_Gateway
 {
