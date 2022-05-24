@@ -45,8 +45,7 @@ public class Search_Service : Search_Service_IF
     public async Task<string> Search_By_Top_10_Close_Heritage_Sites(double yourLongitude, double yourLatitude)
     {
 
-        await searchDB.Search_By_Top_10_Close_Heritage_Sites(yourLongitude, yourLatitude);
-        //searchDB.testFunction(yourLongitude, yourLatitude);
-        return "something";
+        var result = await searchDB.Search_By_Top_10_Close_Heritage_Sites(yourLongitude, yourLatitude);
+        return result;
     }
 }

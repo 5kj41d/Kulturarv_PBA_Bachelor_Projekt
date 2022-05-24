@@ -52,18 +52,18 @@ namespace SearchService.DAL
             return null;
         }
 
-        public async Task<List<IRecord>> Search_By_Top_10_Close_Heritage_Sites(double yourLongitude, double yourLatitude)
+        public async Task<string> Search_By_Top_10_Close_Heritage_Sites(double yourLongitude, double yourLatitude)
         {
             var query = @"With point({longitude: $yourLongitude, latitude:$yourLatitude}) as yourLocation
             MATCH (h:Heritage_Location)
             WHERE point.distance(yourLocation, h.Coordinate) < 50000000000
-            RETURN h
+            RETURN h.Name, h.Coordinate, h.Terrain_Type, h.Basic_Information, h.Origin_Year, h.Type
             ORDER BY point.distance(yourLocation, h.Coordinate) ASC 
             LIMIT 10
             ";
             var session = _driver.AsyncSession();
             List<IRecord> readResults = new List<IRecord>();
-            List<string> resultJson = null;
+            string resultJson = null;
             try
             {
                 readResults = await session.ReadTransactionAsync(async tx =>
@@ -71,8 +71,11 @@ namespace SearchService.DAL
                         var result = await tx.RunAsync(query, new { yourLongitude = yourLongitude, yourLatitude = yourLatitude });
                         return (await result.ToListAsync());
                     });
+
+
+                resultJson = JsonConverter.ConvertDBResultToJson(readResults);
             }
-            //resultJson = JsonConverter.ConvertDBResultToJson(readResults);
+
 
             //Map to SearchServiceModel
 
@@ -87,7 +90,7 @@ namespace SearchService.DAL
             {
                 await session.CloseAsync();
             }
-            return readResults;
+            return resultJson;
         }
     }
 }
