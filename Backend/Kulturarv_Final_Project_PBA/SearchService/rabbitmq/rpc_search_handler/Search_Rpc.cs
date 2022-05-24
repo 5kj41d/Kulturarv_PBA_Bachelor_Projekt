@@ -2,16 +2,34 @@ using System;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
-public class RPCServer 
+namespace rabbitmq.rpc_search_handler
 {
-	public RPCServer()
-	{
-		Listen_And_Respond(); 
-	}
+public class RPCServer
+{
+    private readonly IConfiguration _config;
+    public RPCServer(IConfiguration config)
+    {
+        _config = config;
+        Listen_And_Respond();
+    }
+
+    private ConnectionFactory Setup_Connection_Factory()
+    {
+		var rabbitMqConfig = _config.GetSection("RabbitMqConnection").Get<RabbitMQConnectionHandler>();
+		var factory = new ConnectionFactory
+		{
+			HostName = rabbitMqConfig.HostName,
+			Password = rabbitMqConfig.Password,
+			VirtualHost = rabbitMqConfig.VirtualHost,
+			UserName = rabbitMqConfig.Username
+		};
+        return factory;
+    }
     public void Listen_And_Respond()
     {
-        var factory = new ConnectionFactory() { HostName = "localhost" };
+        var factory = Setup_Connection_Factory();
         using (var connection = factory.CreateConnection())
         using (var channel = connection.CreateModel())
         {
@@ -53,11 +71,12 @@ public class RPCServer
                       multiple: false);
                 }
             };
-		}
-	}
+        }
+    }
 
-	private void Check_Message_Body()
-	{
-		//TODO: Check hvilken metode den skal kalde. 
-	}
+    private void Check_Message_Body()
+    {
+        //TODO: Check hvilken metode den skal kalde. 
+    }
+}
 }

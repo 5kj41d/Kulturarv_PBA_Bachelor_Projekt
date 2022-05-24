@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client; 
+using rabbitmq.rpc_search_handler;
 
 namespace SearchService
 {
@@ -15,8 +16,11 @@ namespace SearchService
         static async Task Main(string[] args)
         {
             IConfiguration Config = new ConfigurationBuilder()
-                .AddJsonFile("appSettings.json")
+                .AddJsonFile("appsettings.Development.json")
+                .SetBasePath(Environment.CurrentDirectory)
                 .Build();
+            RPCServer rpc = new  RPCServer(Config); 
+            //TODO: Should run all the time. 
             //Search_Rpc search_Rpc = new Search_Rpc();
             Search_Service_IF searchService = new Search_Service();
             await searchService.Search_By_Top_10_Close_Heritage_Sites(9.003, 52.0005);
