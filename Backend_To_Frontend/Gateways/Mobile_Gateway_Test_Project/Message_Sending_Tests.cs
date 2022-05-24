@@ -3,78 +3,49 @@ using Microsoft.Extensions.Options;
 using Mobile_Gateway.rabbitmq;
 using Moq;
 using Xunit;
+using System.IO;
 using System;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mobile_Gateway_Test_Project
 {
-    public class TestsFixture : IDisposable
-    {
-        private readonly TestServer server;
-        private readonly HttpClient client;
 
-        public TestsFixture()
-        {
-            // Do "global" initialization here; Only called once.
-            server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
-            client = server.CreateClient();
-        }
 
-        public IServiceProvider ServiceProvider => server.Host.Services;
-
-        public void Dispose()
-        {
-            // Do "global" teardown here; Only called once.
-            server.Dispose();
-            client.Dispose();
-        }
-    }
-
-    public class Startup
-    {
-        public Startup(IWebHostEnvironment env)
-        {
-            env.EnvironmentName = "test";
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.test.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-
-            Configuration = builder.Build();
-        }
-
-        private void ConfigureServices(IServiceCollection services)
-        {
-            //Add Logging DI service:
-            var serviceProvider = services.BuildServiceProvider();
-            var logger = serviceProvider.GetService<ILogger<Message_Sending_Tests>>();
-            services.AddSingleton(typeof(ILogger), logger);
-            //RabbitMQ configuration.
-            services.Configure<RabbitMqConfiguration>(a => Configuration.GetSection(nameof(RabbitMqConfiguration)).Bind(a));
-            services.AddSingleton<Rpc_sender_IF, Rpc_sender>();
-        }
-
-        public IConfigurationRoot Configuration { get; }
-    }
-
-    public class Message_Sending_Tests : IClassFixture<TestsFixture>
+    public class Message_Sending_Tests
     {
         #region Version 1 tests for search service controller. --> RabbitMQ Classes for now.
         private const string Routing_key = "Search";
-        private readonly TestsFixture _testsFixture;
-        private readonly ILogger<Message_Sending_Tests> _logger;
-        public readonly IOptions<RabbitMqConfiguration> _configuration;
-
-        public Message_Sending_Tests(TestsFixture testsFixture, ILogger<Message_Sending_Tests> logger, IOptions<RabbitMqConfiguration> options)
+        public IServiceProvider Services { get; private set; }
+        //public Logger Logger { get; private set; }
+        public IOptions<RabbitMqConfiguration> _options; 
+        public IConfiguration Configuration { get; }
+        public Message_Sending_Tests()
         {
-            _testsFixture = testsFixture; //Get data from testsfixture. 
-            _logger = logger;
-            _configuration = options;
+           Configure(); 
+        }
+
+        private void Configure()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.test.json")
+                //.AddJsonFile("appsettings.test.json", optional: true)
+                .Build();
+
+            // Logger = new LoggerConfiguration()
+            // .MinimumLevel.Debug()
+            // .WriteTo.LiterateConsole()
+            // .WriteTo.RollingFile("logs/{Date}-log.txt")
+            // .CreateLogger();
+
+            var services = new ServiceCollection();
+            // services.AddSingleton<ILogger>(s => Logger);
+            // other DI logic and initializations ...
+            //services.AddTransient(x => ...);
+
+            services.Configure<RabbitMqConfiguration>(a => Configuration.GetSection(nameof(RabbitMqConfiguration)).Bind(a));
+            Services = services.BuildServiceProvider();
         }
 
         ///////////////////// Tests starts /////////////////////
@@ -202,7 +173,8 @@ namespace Mobile_Gateway_Test_Project
         public void Test_Rpc_Connection_To_RabbitMQ()
         {
             //TODO: get configs from TestFixture. 
-            Rpc_sender rpc_Sender = new Rpc_sender(_configuration, _logger);
+            var config = Services.GetService<RabbitMqConfiguration>();
+            Rpc_sender rpc_Sender = new Rpc_sender(_options, null);
             var result = rpc_Sender.Test_Connection();
             Assert.True(result);
         }
