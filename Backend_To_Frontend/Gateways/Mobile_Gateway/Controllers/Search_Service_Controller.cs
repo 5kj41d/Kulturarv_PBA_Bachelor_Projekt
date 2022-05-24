@@ -84,6 +84,5 @@ namespace Mobile_Gateway
         //TODO: Get all from associated events.
         //Method goes here --> 
         #endregion
-
     }
 }
