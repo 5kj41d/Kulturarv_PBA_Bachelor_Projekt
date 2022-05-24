@@ -12,6 +12,7 @@ public class RPCServer
     public RPCServer(IConfiguration config)
     {
         _config = config;
+		while(true)
         Listen_And_Respond();
     }
 
@@ -23,7 +24,8 @@ public class RPCServer
 			HostName = rabbitMqConfig.HostName,
 			Password = rabbitMqConfig.Password,
 			VirtualHost = rabbitMqConfig.VirtualHost,
-			UserName = rabbitMqConfig.Username
+			UserName = rabbitMqConfig.Username,
+			Uri = new Uri(rabbitMqConfig.URL),
 		};
         return factory;
     }
@@ -60,7 +62,7 @@ public class RPCServer
                 catch (Exception e)
                 {
                     Console.WriteLine(" [.] " + e.Message);
-                    response = "";
+                    response = "awds";
                 }
                 finally
                 {
