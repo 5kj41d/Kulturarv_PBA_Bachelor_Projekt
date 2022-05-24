@@ -9,16 +9,21 @@ namespace SearchService.DAL
 {
     public class SearchDB : SearchDBIF
     {
-        private readonly IDriver _driver;
-        private readonly string uri;
-        private readonly string user;
-        private readonly string password;
+        private IDriver _driver;
+        private  string _uri;
+        private  string _user;
+        private  string _password;
         public SearchDB()
         {
-            uri = "neo4j+s://2247b14c.databases.neo4j.io";
-            user = "neo4j";
-            password = "PnFCP9fOvFmj0nmVF3CoySRCmvKluE1Q565lMYjBGCI";
-            _driver = GraphDatabase.Driver(uri, AuthTokens.Basic(user, password));
+            Init(); 
+        }
+
+        private void Init()
+        {
+            _uri = "neo4j+s://2247b14c.databases.neo4j.io";
+            _user = "neo4j";
+            _password = "PnFCP9fOvFmj0nmVF3CoySRCmvKluE1Q565lMYjBGCI";
+            _driver = GraphDatabase.Driver(_uri, AuthTokens.Basic(_user, _password));
         }
 
         public async Task<List<string>> Search_By_Heritage_Type(string heritageType)
@@ -57,7 +62,7 @@ namespace SearchService.DAL
             LIMIT 10
             ";
             var session = _driver.AsyncSession();
-            List<IRecord> readResults = null;
+            List<IRecord> readResults = new List<IRecord>();
             List<string> resultJson = null;
             try
             {

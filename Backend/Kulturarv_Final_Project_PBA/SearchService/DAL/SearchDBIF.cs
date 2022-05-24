@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SearchService.DAL
 {
-    interface SearchDBIF
+    public interface SearchDBIF
     {
         #region Version 1. 
         public Task<List<string>> Search_By_Region(string regionName);
