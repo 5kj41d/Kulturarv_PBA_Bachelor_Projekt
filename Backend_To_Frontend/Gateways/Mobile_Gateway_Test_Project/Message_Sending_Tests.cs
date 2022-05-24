@@ -1,43 +1,72 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Mobile_Gateway;
 using Mobile_Gateway.rabbitmq;
 using Moq;
 using Xunit;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using System.Net.Http;
 
 namespace Mobile_Gateway_Test_Project
 {
     public class TestsFixture : IDisposable
     {
-        public readonly ILogger<Search_Service_Controller> _logger;
+        public readonly ILogger<Message_Sending_Tests> _logger;
         public readonly IOptions<RabbitMqConfiguration> _configuration;
         public IConfiguration Configuration { get; }
-        public TestsFixture(ILogger<Search_Service_Controller> logger, IOptions<RabbitMqConfiguration> options, IConfiguration configuration)
+        private readonly TestServer server;
+        private readonly HttpClient client;
+        
+        public TestsFixture(ILogger<Message_Sending_Tests> logger, IOptions<RabbitMqConfiguration> options, IConfiguration configuration)
         {
             // Do "global" initialization here; Only called once.
+            server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+            client = server.CreateClient();
+            IServiceCollection services = new ServiceCollection(); 
             _logger = logger; 
             _configuration = options;
             Configuration = configuration; 
+        }
+
+        public IServiceProvider ServiceProvider => server.Host.Services;    
+
+        public void Dispose()
+        {
+            // Do "global" teardown here; Only called once.
+            server.Dispose();
+            client.Dispose();
+        }
+    }
+
+    public class Startup
+    {
+        public Startup(IWebHostEnvironment env)
+        {
+            env.EnvironmentName = "test";
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.test.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+
+            Configuration = builder.Build();
         }
 
         private void ConfigureServices(IServiceCollection services)
         {
             //Add Logging DI service:
             var serviceProvider = services.BuildServiceProvider(); 
-            var logger = serviceProvider.GetService<ILogger<Search_Service_Controller>>();
+            var logger = serviceProvider.GetService<ILogger<Message_Sending_Tests>>();
             services.AddSingleton(typeof(ILogger), logger);
             //RabbitMQ configuration.
             services.Configure<RabbitMqConfiguration>(a => Configuration.GetSection(nameof(RabbitMqConfiguration)).Bind(a));
             services.AddSingleton<Rpc_sender_IF, Rpc_sender>();
         }
 
-        public void Dispose()
-        {
-            // Do "global" teardown here; Only called once.
-        }
+        public IConfigurationRoot Configuration { get; }
     }
 
     public class Message_Sending_Tests : IClassFixture<TestsFixture>
@@ -45,9 +74,11 @@ namespace Mobile_Gateway_Test_Project
         #region Version 1 tests for search service controller. --> RabbitMQ Classes for now.
        private const string Routing_key = "Search";
        private readonly TestsFixture _testsFixture; 
-       public Message_Sending_Tests(TestsFixture testsFixture)
+       private readonly ILogger<Message_Sending_Tests> _logger; 
+       public Message_Sending_Tests(TestsFixture testsFixture, ILogger<Message_Sending_Tests> logger)
        {
            _testsFixture = testsFixture; //Get data from testsfixture. 
+            _logger = logger; 
        }
 
         ///////////////////// Tests starts /////////////////////
