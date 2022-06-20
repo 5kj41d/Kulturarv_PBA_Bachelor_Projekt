@@ -18,6 +18,7 @@ namespace Mobile_Gateway
 {
     //Ressources: https://docs.microsoft.com/en-us/dotnet/architecture/microservices/secure-net-microservices-web-applications/  
     //https://manage.auth0.com/dashboard/eu/dev-k24ialwx/applications/AzRrQU4RT74bFrFFnwzNa3UM6W3PEVJP/quickstart 
+    
     public class Startup
     {
         public Startup(IConfiguration configuration)

@@ -1,71 +1,142 @@
-using Xunit;
-using Moq;
-using System; 
 using Mobile_Gateway.rabbitmq;
+using Moq;
+using Xunit;
+using Mobile_Gateway; 
+using mobile_gateway_models;
 
 namespace Mobile_Gateway_Test_Project
 {
-public class Message_Sending_Tests
-{
-    #region Version 1 tests for search service controller. --> RabbitMQ Classes for now. 
-    private const string Routing_key = "Search";
-    private struct Valid_Sent_Model
+    public class Message_Sending_Tests
     {
-        public Valid_Sent_Model(string routing_key, string message)
-        {
-            _routing_key = routing_key; 
-            _message = message; 
-        }
-        string _routing_key {get; set;}
-        string _message {get; set;}
-    }
-    private struct Invalid_Sent_Model
-    {
-        public Invalid_Sent_Model(string routing_key, string message)
-        {
-            _routing_key = routing_key; 
-            _message = message; 
-        }
-        string _routing_key {get; set;}
-        string _message {get; set;}
-        //Something odd should be used.
+        #region Version 1 tests for search service controller. --> RabbitMQ Classes for now.
+        private const string Routing_key = "Search";
         
-    }
-    ///////////////////// Tests starts /////////////////////
-    [Fact]
-    public void Test_Rpc_Get_All()
-    {
-        //Arrange
-        Valid_Sent_Model valid_Sent_Model = new Valid_Sent_Model(Routing_key,"Get_All");
-        var mock_rabbitmq = new Mock<Rpc_sender_IF>(); 
-        //Act 
-        //Assert
-    }
-    [Fact]
-    public void Test_Rpc_Get_By_Region()
-    {
-        //Arrange
-        //Act
-        //Assert
-    }
-    [Fact]
-    public void Test_Rpc_Get_By_Timeage()
-    {
-        //Arrange
-        //Act
-        //Assert
-        Console.WriteLine("Working!"); 
-    }
-    [Fact]
-    public void Test_Rpc_Get_By_Heritage_Type()
-    {
-        //Arrange
-        //Act
-        //Assert
-    }
+        ///////////////////// Tests starts /////////////////////
+        [Fact]
+        public void Test_Rpc_Get_All()
+        {
+            //Arrange
+            SentModel sent_Model = new SentModel(Routing_key, "Get_All");
+            var mock_rabbitmq = new Mock<Rpc_sender_IF>();
 
-    //TODO: Test for invalid inputs. 
-    ///////////////////// Tests end /////////////////////
-    #endregion
+            //Act
+            mock_rabbitmq
+                .Setup(p => p.Sent_Message_To_Message_Bus_RPC(sent_Model))
+                .Returns("Something");
+            var result =
+                mock_rabbitmq
+                    .Object
+                    .Sent_Message_To_Message_Bus_RPC(sent_Model);
+            //Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void Test_Rpc_Get_By_Region()
+        {
+            //Arrange
+            SentModel sent_Model = new SentModel(Routing_key, "Region");
+            var mock_rabbitmq = new Mock<Rpc_sender_IF>();
+
+            //Act
+            mock_rabbitmq
+                .Setup(p => p.Sent_Message_To_Message_Bus_RPC(sent_Model))
+                .Returns("Something");
+            var result =
+                mock_rabbitmq
+                    .Object
+                    .Sent_Message_To_Message_Bus_RPC(sent_Model);
+
+            //Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void Test_Rpc_Get_By_Timeage()
+        {
+            //Arrange
+            SentModel sent_Model = new SentModel(Routing_key, "TimeAge");
+            var mock_rabbitmq = new Mock<Rpc_sender_IF>();
+
+            //Act
+            mock_rabbitmq
+                .Setup(p => p.Sent_Message_To_Message_Bus_RPC(sent_Model))
+                .Returns("Something");
+            var result =
+                mock_rabbitmq
+                    .Object
+                    .Sent_Message_To_Message_Bus_RPC(sent_Model);
+
+            //Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void Test_Rpc_Get_By_Heritage_Type_Burial_Mound()
+        {
+            //Arrange
+            SentModel sent_Model = new SentModel(Routing_key, "Gravhøj");
+            var mock_rabbitmq = new Mock<Rpc_sender_IF>();
+
+            //Act
+            mock_rabbitmq
+                .Setup(p => p.Sent_Message_To_Message_Bus_RPC(sent_Model))
+                .Returns("Something");
+            var result =
+                mock_rabbitmq
+                    .Object
+                    .Sent_Message_To_Message_Bus_RPC(sent_Model);
+
+            //Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void Test_Rpc_Get_With_Invalid_Input_Integer()
+        {
+            //Arrange
+            SentModel sent_Model = new SentModel(Routing_key, "12345");
+            var mock_rabbitmq = new Mock<Rpc_sender_IF>();
+
+            //Act
+            mock_rabbitmq
+                .Setup(p => p.Sent_Message_To_Message_Bus_RPC(sent_Model))
+                .Returns("Not valid!");
+            var result =
+                mock_rabbitmq
+                    .Object
+                    .Sent_Message_To_Message_Bus_RPC(sent_Model);
+
+            //Assert
+            Assert.Equal("Not valid!", result);
+        }
+
+        [Fact]
+        public void Test_Rpc_Get_With_Invalid_Input_String()
+        {
+            //Arrange
+            SentModel sent_Model = new SentModel(Routing_key, "Volapyk");
+            var mock_rabbitmq = new Mock<Rpc_sender_IF>();
+
+            //Act
+            mock_rabbitmq
+                .Setup(p => p.Sent_Message_To_Message_Bus_RPC(sent_Model))
+                .Returns("Not valid!");
+            var result =
+                mock_rabbitmq
+                    .Object
+                    .Sent_Message_To_Message_Bus_RPC(sent_Model);
+
+            //Assert
+            Assert.Equal("Not valid!", result);
+        }
+
+        [Fact]
+        public void Test_Rpc_Connection_To_RabbitMQ()
+        {
+            //TODO: Check if appsettings.test.json can be used. 
+        }
+        ///////////////////// Tests end /////////////////////
+        #endregion
     }
 }

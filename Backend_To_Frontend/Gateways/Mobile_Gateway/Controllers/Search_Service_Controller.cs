@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mobile_Gateway.rabbitmq;
+using mobile_gateway_models; 
 
 namespace Mobile_Gateway
 {
@@ -31,14 +32,14 @@ namespace Mobile_Gateway
         [HttpGet]
         //[Authorize]
         [ApiVersion("1.0")]
-        public IEnumerable<string> Get()
+        public string Get()
         {
             Rpc_sender_IF sender = new Rpc_sender(_configuration, _logger);  //TODO: Fix this. 
             
             //TODO: Check for JWTs.
             //TODO: Error check if something goes wrong. 
 
-            Sent_Model sent_Model = new Sent_Model(_configuration.Value._routing_keys[0], "Get_All");
+            SentModel sent_Model = new SentModel(_configuration.Value._routing_keys[0], "Get_All");
             return sender.Sent_Message_To_Message_Bus_RPC(sent_Model);
         }
 
@@ -46,12 +47,12 @@ namespace Mobile_Gateway
         [HttpGet]
         //[Authorize]
         [ApiVersion("1.0")]
-        public IEnumerable<string> Get_Heritage_Type(string type)
+        public string Get_Heritage_Type(string type)
         {
             Rpc_sender_IF sender = new Rpc_sender(_configuration, _logger);
             //TODO: Check for JWTs.
             //TODO: Error check if something goes wrong.
-            Sent_Model sent_Model = new Sent_Model(_configuration.Value._routing_keys[0], type);
+            SentModel sent_Model = new SentModel(_configuration.Value._routing_keys[0], type);
             return sender.Sent_Message_To_Message_Bus_RPC(sent_Model); 
         }
 
@@ -59,12 +60,12 @@ namespace Mobile_Gateway
         [HttpGet]
         //[Authorize]
         [ApiVersion("1.0")]
-        public IEnumerable<string> Get_All_From_Time_Age(int age)
+        public string Get_All_From_Time_Age(int age)
         {
             Rpc_sender_IF sender = new Rpc_sender(_configuration, _logger);
             //TODO: Check for JWTs.
             //TODO: Error check if something goes wrong.
-            Sent_Model sent_Model = new Sent_Model(_configuration.Value._routing_keys[0], age.ToString());
+            SentModel sent_Model = new SentModel(_configuration.Value._routing_keys[0], age.ToString());
             return sender.Sent_Message_To_Message_Bus_RPC(sent_Model); 
         }
 
@@ -72,18 +73,17 @@ namespace Mobile_Gateway
         [HttpGet]
         //[Authorize]
         [ApiVersion("1.0")]
-        public IEnumerable<string> Get_All_From_Region(string region)
+        public string Get_All_From_Region(string region)
         {
             Rpc_sender_IF sender = new Rpc_sender(_configuration, _logger);
             //TODO: Check for JWTs.
             //TODO: Error check if something goes wrong.
-            Sent_Model sent_Model = new Sent_Model(_configuration.Value._routing_keys[0], region);
+            SentModel sent_Model = new SentModel(_configuration.Value._routing_keys[0], region);
             return sender.Sent_Message_To_Message_Bus_RPC(sent_Model);  
         }
 
         //TODO: Get all from associated events.
         //Method goes here --> 
         #endregion
-
     }
 }
