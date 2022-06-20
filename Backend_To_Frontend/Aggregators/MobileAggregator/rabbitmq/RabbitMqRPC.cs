@@ -5,6 +5,7 @@ using RabbitMQ.Client.Events;
 
 namespace rabbitmq
 {
+    //Ressource: https://www.rabbitmq.com/tutorials/tutorial-six-dotnet.html 
     public interface RabbitMqRPCIF
     {
         
@@ -62,7 +63,8 @@ namespace rabbitmq
 
         private string Make_Request_And_Get_Response(string message)
         {
-            return null; 
+            //TODO: Should be routed and sent to the right micro service using rabbitmq. 
+            return "THIS IS A HERITAGE SITE!"; 
         }
     }
 }
