@@ -3,6 +3,7 @@ using RabbitMQ.Client;
 using System.Text;
 using RabbitMQ.Client.Events;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace rabbitmq
 {
@@ -20,15 +21,18 @@ namespace rabbitmq
 
         private void Init()
         {
-            var factory = new ConnectionFactory() {HostName = ""};  //TODO: Need config file!
+            //TODO: Need config file!
+            var factory = new ConnectionFactory() {HostName = RabbitMqConenction.HostName, 
+                UserName = RabbitMqConenction.Username, Password = RabbitMqConenction.Password, 
+                VirtualHost = RabbitMqConenction.VirtualHost};  
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.QueueDeclare(queue: "RPC_Request_Search_Queue", durable: true,
+                channel.QueueDeclare(queue: RabbitMqConenction.Channels["RPC_Request"], durable: true,
                 exclusive: false, autoDelete: false, arguments: null);
                 channel.BasicQos(0,1,false);
                 var consumer = new EventingBasicConsumer(channel);
-                channel.BasicConsume(queue: "RPC_Reply_Search_Queue", autoAck: false, consumer: consumer);
+                channel.BasicConsume(queue: RabbitMqConenction.Channels["RPC_Reply"], autoAck: false, consumer: consumer);
                 Console.WriteLine(" [x] Awaiting RPC requests");
 
                 consumer.Received += (model, ea) => 
@@ -69,12 +73,20 @@ namespace rabbitmq
             return repos.Call(message); 
         }
 
-
-
-
-
-
-
+        public static class RabbitMqConenction
+        {
+            public static string HostName = "hawk.rmq.cloudamqp.com";
+            public static string Username = "qrnmzmvv";
+            public static string Password = "acgnVEp0crbkjhO_iySLLAxSFV-CiK3J";
+            public static string VirtualHost = "/";
+            public static List<string> Routing_Keys = new List<string>{"Search", "Auth", "Map_Service"};
+            public static Dictionary<string,string> Channels = new Dictionary<string, string>{
+                {"RPC_Reply","RPC_Reply_Search_Queue"},
+                {"RPC_Request","RPC_Request_Search_Queue"},
+                {"Auth_Reply","Authentication_Queue_Reply"},
+                {"Auth_Request","Authentication_Queue_Request"}
+            };
+        }
 
 
 
