@@ -10,5 +10,10 @@ namespace MobileAggregator_Test_Project
         {
 
         }
+        [Fact]
+        public void Test2()
+        {
+            
+        }
     }
 }
