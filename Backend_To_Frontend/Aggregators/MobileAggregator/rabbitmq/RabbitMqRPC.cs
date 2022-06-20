@@ -2,6 +2,7 @@ using System;
 using RabbitMQ.Client;
 using System.Text;
 using RabbitMQ.Client.Events;
+using System.Collections.Concurrent;
 
 namespace rabbitmq
 {
@@ -19,7 +20,7 @@ namespace rabbitmq
 
         private void Init()
         {
-            var factory = new ConnectionFactory() {HostName = ""}; 
+            var factory = new ConnectionFactory() {HostName = ""};  //TODO: Need config file!
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
@@ -64,7 +65,87 @@ namespace rabbitmq
         private string Make_Request_And_Get_Response(string message)
         {
             //TODO: Should be routed and sent to the right micro service using rabbitmq. 
-            return "THIS IS A HERITAGE SITE!"; 
+            ServiceReposIF repos = new ServiceRepos();  
+            return repos.Call(message); 
+        }
+
+
+
+
+
+
+
+
+
+
+        //TODO: Should be moved to its own file later on.
+        public interface ServiceReposIF
+        {
+            public string SearchHeritageSite(string message);
+            //DEMO METHOD BELOW:
+            public string Call(string message);
+        }
+        //TODO: Should be moved to its own file later on.
+        public class ServiceRepos : ServiceReposIF
+        {
+            private readonly IConnection connection;
+            private readonly IModel channel;
+            private readonly string replyQueueName;
+            private readonly EventingBasicConsumer consumer;
+            private readonly BlockingCollection<string> respQueue = new BlockingCollection<string>();
+            private readonly IBasicProperties props;
+            public ServiceRepos()
+            {
+                var factory = new ConnectionFactory() { HostName = "localhost" };       //TODO: Add config file to handle this!
+
+                connection = factory.CreateConnection();
+                channel = connection.CreateModel();
+                replyQueueName = channel.QueueDeclare().QueueName;
+                consumer = new EventingBasicConsumer(channel);
+
+                props = channel.CreateBasicProperties();
+                var correlationId = Guid.NewGuid().ToString();
+                props.CorrelationId = correlationId;
+                props.ReplyTo = replyQueueName;
+
+                consumer.Received += (model, ea) =>
+                {
+                    var body = ea.Body.ToArray();
+                    var response = Encoding.UTF8.GetString(body);
+                    if (ea.BasicProperties.CorrelationId == correlationId)
+                    {
+                      respQueue.Add(response);
+                    }
+                };
+
+                channel.BasicConsume(
+                    consumer: consumer,
+                    queue: replyQueueName,
+                    autoAck: true);
+            }
+            public string Call(string message)
+            {
+                var messageBytes = Encoding.UTF8.GetBytes(message);
+                channel.BasicPublish(
+                    exchange: "amq.direct",
+                    routingKey: "RPC_Request_Search_MicroService_Queue",
+                    basicProperties: props,
+                    body: messageBytes);
+
+                return respQueue.Take();
+            }   
+
+            public void Close()
+            {
+                connection.Close();
+            }
+
+
+            //TODO: MAKE THIS THE MAIN METHOD LATER FOR GETTING DATA!
+            public string SearchHeritageSite(string message)
+            {
+                return ""; 
+            }
         }
     }
 }

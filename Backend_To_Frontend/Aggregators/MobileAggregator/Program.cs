@@ -1,4 +1,5 @@
 ﻿using System;
+using rabbitmq;
 
 namespace MobileAggregator
 {
@@ -6,7 +7,7 @@ namespace MobileAggregator
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            RabbitMqRPC rabbitmq = new RabbitMqRPC();   //TODO: Dependency injection. 
         }
     }
 }
