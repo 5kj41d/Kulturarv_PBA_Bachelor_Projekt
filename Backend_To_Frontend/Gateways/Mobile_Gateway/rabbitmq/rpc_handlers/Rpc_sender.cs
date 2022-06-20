@@ -10,94 +10,71 @@ using mobile_gateway_models;
 
 namespace Mobile_Gateway.rabbitmq
 {
-    //Interface 
+    //Ressource: https://www.rabbitmq.com/tutorials/tutorial-six-dotnet.html
     public interface Rpc_sender_IF
     {
-        public string Sent_Message_To_Message_Bus_RPC(SentModel sent_model);
+        public string Call(string message);
+        public void Close();
         public bool Test_Connection();
     }
-    /////
-
     public class Rpc_sender : Rpc_sender_IF
     {
-        private readonly ILogger _logger;
-        private readonly RabbitMqConfiguration _configuration;
-        private string replyQueueName;
+         private readonly IConnection connection;
+        private readonly IModel channel;
+        private readonly string replyQueueName;
         private readonly EventingBasicConsumer consumer;
         private readonly BlockingCollection<string> respQueue = new BlockingCollection<string>();
+        private readonly IBasicProperties props;
+        private readonly ILogger _logger;
+        private readonly RabbitMqConfiguration _configuration;
 
         public Rpc_sender(IOptions<RabbitMqConfiguration> options, ILogger logger)
         {
             _configuration = options.Value;
             _logger = logger;
-            Init();
-        }
-
-        /// <summary>
-        /// Initiate consumer/response channel. 
-        /// </summary>
-        private void Init()
-        {
-            IModel channel;
-            var conn = Setup_Connection();
-            channel = conn.CreateModel();
+            connection = Setup_Connection();
+            channel = connection.CreateModel();
             replyQueueName = channel.QueueDeclare().QueueName;
-            var consumer = new EventingBasicConsumer(channel);
+            consumer = new EventingBasicConsumer(channel);
 
-            IBasicProperties props = channel.CreateBasicProperties();
+            props = channel.CreateBasicProperties();
             var correlationId = Guid.NewGuid().ToString();
             props.CorrelationId = correlationId;
             props.ReplyTo = replyQueueName;
 
             consumer.Received += (model, ea) =>
-            {
-                var body = ea.Body.ToArray();
-                var response = Encoding.UTF8.GetString(body);
-                if (ea.BasicProperties.CorrelationId == correlationId)
-                {
-                    respQueue.Add(response);
-                }
-            };
-
-            channel.BasicConsume(
-                consumer: consumer,
-                queue: replyQueueName,
-                autoAck: true);
-        }
-
-        /// <summary> 
-        /// Version 1. Takes a string of search message to be sent. Returns void. 
-        /// </summary>
-        /// param name="message" of string
-        public string Sent_Message_To_Message_Bus_RPC(SentModel sent_model)
         {
-            string correlation_id = Guid.NewGuid().ToString();
-            IConnection conn = null;
-            IModel channel = null;
-            try
+            var body = ea.Body.ToArray();
+            var response = Encoding.UTF8.GetString(body);
+            if (ea.BasicProperties.CorrelationId == correlationId)
             {
-                conn = Setup_Connection();
-                channel = conn.CreateModel();
-                byte[] messageBodyBytes = System.Text.Encoding.UTF8.GetBytes(sent_model._message);
-                IBasicProperties props = channel.CreateBasicProperties();
-                props.ContentType = "text/plain";
-                props.DeliveryMode = 2;
-                props.CorrelationId = correlation_id;
-                channel.BasicPublish("direct", sent_model._routing_key, props, messageBodyBytes);
+                respQueue.Add(response);
             }
-            catch (Exception e)
-            {
-                _logger.LogError(0, e, "Couldnt sent message to rabbitMQ", sent_model);
-                return "Not Valid!";
-            }
-            finally
-            {
-                channel.Close();
-                conn.Close();
-            }
-            //TODO: Wait for resonse. --> Return that value. --> 
-            return respQueue.Take();
+        };
+
+        channel.BasicConsume(
+            consumer: consumer,
+            queue: replyQueueName,
+            autoAck: true);
+    }
+
+    public string Call(string message)
+    {
+        var messageBytes = Encoding.UTF8.GetBytes(message);
+        channel.BasicPublish(
+            exchange: "amq.direct",
+            routingKey: "RPC_Request_Search_Queue",
+            basicProperties: props,
+            body: messageBytes);
+
+        return respQueue.Take();
+    }
+
+        public void Close()
+        {
+            connection.Close();
         }
+    
 
         /// <summary>
         /// Setup connection to RabbitMQ.
