@@ -2,11 +2,8 @@ using System;
 
 namespace serviceRepositories
 {
-    public class ServiceRepos : ServiceReposIF
+    public static class ServiceRepos : ServiceReposIF
     {
-        public ServiceRepos()
-        {
-            
-        }
+        
     }
 }

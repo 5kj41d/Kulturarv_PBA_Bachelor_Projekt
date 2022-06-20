@@ -5,13 +5,15 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Collections.Concurrent;
 using System.Text;
+using Mobile_Gateway; 
+using mobile_gateway_models;
 
 namespace Mobile_Gateway.rabbitmq
 {
     //Interface 
     public interface Rpc_sender_IF
     {
-        public string Sent_Message_To_Message_Bus_RPC(Sent_Model sent_model);
+        public string Sent_Message_To_Message_Bus_RPC(SentModel sent_model);
         public bool Test_Connection();
     }
     /////
@@ -67,7 +69,7 @@ namespace Mobile_Gateway.rabbitmq
         /// Version 1. Takes a string of search message to be sent. Returns void. 
         /// </summary>
         /// param name="message" of string
-        public string Sent_Message_To_Message_Bus_RPC(Sent_Model sent_model)
+        public string Sent_Message_To_Message_Bus_RPC(SentModel sent_model)
         {
             string correlation_id = Guid.NewGuid().ToString();
             IConnection conn = null;

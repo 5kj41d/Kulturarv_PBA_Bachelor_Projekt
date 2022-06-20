@@ -2,6 +2,7 @@ using Mobile_Gateway.rabbitmq;
 using Moq;
 using Xunit;
 using Mobile_Gateway; 
+using mobile_gateway_models;
 
 namespace Mobile_Gateway_Test_Project
 {
@@ -15,7 +16,7 @@ namespace Mobile_Gateway_Test_Project
         public void Test_Rpc_Get_All()
         {
             //Arrange
-            Sent_Model sent_Model = new Sent_Model(Routing_key, "Get_All");
+            SentModel sent_Model = new SentModel(Routing_key, "Get_All");
             var mock_rabbitmq = new Mock<Rpc_sender_IF>();
 
             //Act
@@ -34,7 +35,7 @@ namespace Mobile_Gateway_Test_Project
         public void Test_Rpc_Get_By_Region()
         {
             //Arrange
-            Sent_Model sent_Model = new Sent_Model(Routing_key, "Region");
+            SentModel sent_Model = new SentModel(Routing_key, "Region");
             var mock_rabbitmq = new Mock<Rpc_sender_IF>();
 
             //Act
@@ -54,7 +55,7 @@ namespace Mobile_Gateway_Test_Project
         public void Test_Rpc_Get_By_Timeage()
         {
             //Arrange
-            Sent_Model sent_Model = new Sent_Model(Routing_key, "TimeAge");
+            SentModel sent_Model = new SentModel(Routing_key, "TimeAge");
             var mock_rabbitmq = new Mock<Rpc_sender_IF>();
 
             //Act
@@ -74,7 +75,7 @@ namespace Mobile_Gateway_Test_Project
         public void Test_Rpc_Get_By_Heritage_Type_Burial_Mound()
         {
             //Arrange
-            Sent_Model sent_Model = new Sent_Model(Routing_key, "Gravhøj");
+            SentModel sent_Model = new SentModel(Routing_key, "Gravhøj");
             var mock_rabbitmq = new Mock<Rpc_sender_IF>();
 
             //Act
@@ -94,7 +95,7 @@ namespace Mobile_Gateway_Test_Project
         public void Test_Rpc_Get_With_Invalid_Input_Integer()
         {
             //Arrange
-            Sent_Model sent_Model = new Sent_Model(Routing_key, "12345");
+            SentModel sent_Model = new SentModel(Routing_key, "12345");
             var mock_rabbitmq = new Mock<Rpc_sender_IF>();
 
             //Act
@@ -114,7 +115,7 @@ namespace Mobile_Gateway_Test_Project
         public void Test_Rpc_Get_With_Invalid_Input_String()
         {
             //Arrange
-            Sent_Model sent_Model = new Sent_Model(Routing_key, "Volapyk");
+            SentModel sent_Model = new SentModel(Routing_key, "Volapyk");
             var mock_rabbitmq = new Mock<Rpc_sender_IF>();
 
             //Act
