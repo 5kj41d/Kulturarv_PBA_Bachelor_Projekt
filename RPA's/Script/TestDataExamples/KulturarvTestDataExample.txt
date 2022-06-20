@@ -1,0 +1,867 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<html>
+
+<head>
+<title>Lokalitet</title>
+<link href="/fundogfortidsminder/mainStyle.css" type="text/css" rel="stylesheet"/>
+<link href="/fundogfortidsminder/menuStyle2.css" type="text/css" rel="stylesheet"/>
+<script type="text/javascript">
+	function mouseOverSearch()
+	{
+		document.imgSearch.src ="/fundogfortidsminder/images/mapsearch-b.gif";
+	}
+	function mouseOutSearch()
+	{
+		document.imgSearch.src ="/fundogfortidsminder/images/mapsearch-a.gif";
+	}
+	function mouseOverAdvSearch()
+	{
+		document.imgAdvSearch.src ="/fundogfortidsminder/images/advansearch-b.gif";
+	}
+	function mouseOutAdvSearch()
+	{
+		document.imgAdvSearch.src ="/fundogfortidsminder/images/advansearch-a.gif";
+	}
+</script>
+</head>
+
+<!-- Start jQuery lightBox plugin -->
+<!-- Dependency source files jQuery lightBox plugin -->
+<script type="text/javascript" src="/fundogfortidsminder/imagegallery/js/jquery.js"></script>
+<script type="text/javascript"
+	src="/fundogfortidsminder/imagegallery/js/jquery.lightbox-0.5.js"></script>
+<!-- End jQuery lightBox dependency source files -->
+
+<link rel="stylesheet" type="text/css"
+	href="/fundogfortidsminder/imagegallery/css/jquery.lightbox-0.5.css"
+	media="screen" />
+
+<style type="text/css">
+/* jQuery lightBox plugin - Gallery style */
+#gallery {
+	background-color: #ebece8;
+	padding: 2px;
+	width: 186px;
+}
+
+#gallery li {
+	display: inline;
+}
+
+#gallery li img {
+	border: 2px solid #fff;
+	border-width: 2px 2px;
+	margin-top: 1px;
+	margin-left: 1px;
+	margin-bottom: 1px;
+}
+
+#gallery li a:hover img {
+	border: 2px solid #444;
+	border-width: 2px 2px;
+	color: #000;
+}
+
+#gallery li a:hover {
+	color: #444;
+}
+</style>
+
+<!-- End jQuery lightBox plugin-->
+
+<!-- Start accordion -->
+<link rel="stylesheet" type="text/css"
+	href="/fundogfortidsminder/jsp/location/accordion/container.css" />
+<link rel="stylesheet" type="text/css"
+	href="/fundogfortidsminder/jsp/location/accordion/accordion.css" />
+<style type="text/css">
+.myAccordion {
+	float: left;
+	margin-right: 2px;
+	margin-left: 2px;
+}
+
+.myAccordion .yui-cms-accordion .yui-cms-item {
+	width: 328px;
+}
+</style>
+<!-- Accordion dependency source files -->
+<script type="text/javascript"
+	src="/fundogfortidsminder/jsp/location/accordion/utilities.js"></script>
+<script type="text/javascript"
+	src="/fundogfortidsminder/jsp/location/accordion/bubbling.js"></script>
+<script type="text/javascript"
+	src="/fundogfortidsminder/jsp/location/accordion/accordion.js"></script>
+<!-- End accordion dependency source files -->
+<!-- End accordion -->
+
+<!-- Start CSS for address search combobox-->
+<link rel="stylesheet" type="text/css"
+	href="/fundogfortidsminder/ext/resources/css/ext-all.css" />
+<link rel="stylesheet" type="text/css"
+	href="/fundogfortidsminder/ext/resources/css/xtheme-gray.css" />
+<!-- End CSS for address search combobox-->
+
+<!-- Start JS for address search combobox-->
+<script type="text/javascript" src="/fundogfortidsminder/ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="/fundogfortidsminder/ext/ext-all.js"></script>
+<script type="text/javascript" src="/fundogfortidsminder/ext/source/locale/ext-lang-da.js"></script>
+
+
+<body class="kuas4f" onload="onLocatioBodyLoad()">
+<center>
+<!-- Script for user stories -->
+<script type="text/javascript">
+systemnr=0;
+var win;
+
+var post = function(panel) {
+		panel.getForm().submit( {
+			method :'POST',
+			success: function(form, action) {
+		       	Ext.Msg.alert("Status", "Din historie er gemt. En besked er blevet sendt til din e-mailadresse, som du skal bekræfte, før din historie bliver offentliggjort på websitet.");
+				win.close();
+		    },
+		    failure: function(form, action) {
+		    	Ext.Msg.alert("Fejl", "Kunne ikke gemme din historie.");
+		    	win.close();
+		    }
+		});
+};
+
+simple = function(config) {
+	var self = this;
+
+	simple.superclass.constructor.call(this, Ext.apply( {
+		labelWidth :75, // label settings here cascade unless overridden
+		url :'/fundogfortidsminder/jsp/userstory/userstory_submit.jsp',
+		frame :true,
+		bodyStyle :'padding:5px', width :440, 
+		defaults : {width :230},
+		defaultType :'textfield',
+		layoutConfig : {labelSeparator :''}, 
+		items : [{	fieldLabel :'Overskrift',
+					name :'headline',
+					allowBlank :false
+				},
+				{	fieldLabel :'Navn',
+					name :'authorname',
+					allowBlank :false
+				},
+				{	fieldLabel :'E-mail',
+					name :'authoremail',
+					vtype :'email'
+				},	new Ext.form.TextArea({
+						width :200,
+						height :200,
+						fieldLabel :'Historie',
+						name :'story',
+						allowBlank :false,
+						maxLength :500
+					}),
+					new Ext.form.Label({
+						html :'Alle felter skal udfyldes. Din e-mailadresse offentliggøres ikke. <br><br>Når du klikker på Send sendes en besked til din e-mailadresse, som du skal bekræfte, før din historie bliver offentliggjort på websitet.',
+						name :'windowlabel',
+						bodyStyle :'padding:5px'
+					}), 
+					new Ext.form.Hidden({
+						name :'systemnr',
+						value :config.systemnr
+					}) 
+				],
+				buttons :[ 
+							{ 
+								text :'Send', 
+								handler :function() { 
+									post(self);
+								}
+							} 
+						]
+		}, config));
+};
+
+Ext.extend(simple, Ext.form.FormPanel);
+  
+Ext.UrlDialog = function(){
+	return {
+		show : function(title, id) {
+				win = new Ext.Window( {
+					title :title,
+					width :455,
+					height :430,
+					closeAction :'hide',
+					autoScroll :true,
+					collapsible :false,
+					maximizable :false,
+					minimizable :false,
+					modal :true,
+					resizable :false,
+					shadow :true,
+					baseCls :'x-panel',
+					cls :'popup-window',
+					items : [
+								new simple({
+									systemnr:id.toString()
+								})
+							]
+					});
+				win.render(document.body);
+				win.show();
+				}
+	};
+}();
+
+//show quick tips with error message
+Ext.QuickTips.init();
+
+//invalid markers to sides
+Ext.form.Field.prototype.msgTarget = 'side';
+
+function onLocatioBodyLoad() {
+	if (document.getElementById("location_point_img")) {
+		document.getElementById("location_point_img").style.visibility = "visible";
+	}
+}
+</script> 
+<!-- End Script for user stories -->
+
+<!-- Activate jQuery lightBox plugin --> 
+<script type="text/javascript">
+	$( function() {
+		$('#gallery a').lightBox();
+	});
+</script> 
+<!-- End Activate jQuery lightBox plugin -->
+
+<div id="pageWrapperDiv" align="left" class="pageWrapperDiv"><!-- Header -->
+
+<div style="position: absolute; left: 0; top: 0; z-index: 100; color: red"></div>
+<div id="pageHeaderDiv" class="pageHeaderDiv">
+	<a class="pageHeaderLink" href="http://www.kulturarv.dk" target="_blank"><img src="/fundogfortidsminder/images/transparent.gif" class="pageHeaderLogoLink" title="kulturarv.dk" alt="" /></a>
+</div>
+<!-- menu header -->
+
+<ul id="tabnav">
+	<li class=""><a class="tablinkwhite" href="/fundogfortidsminder/">FORSIDE</a></li>
+	<li class=""><a class="tablinkwhite" href="/fundogfortidsminder/Kort/">S&Oslash;G PÅ KORT</a></li>
+	<li class="selectedtab"><a class="tablinkgreen" href="/fundogfortidsminder/Sog/">S&Oslash;GNING</a></li>
+	<li class=""><a class="tablinkwhite" href="/fundogfortidsminder/Download/">DOWNLOAD</a></li>
+	<li class=""><a class="tablinkwhite" href="/fundogfortidsminder/Information/">HJ&AElig;LP OG INFO</a></li>
+</ul>	
+<!-- <div id="pageGlobalNavigationWhiteDiv" class="pageGlobalNavigationWhiteDiv"></div> -->
+
+ <!-- Page content -->
+<div id="pageContentAreaDiv" align="left" class="pageContentAreaDiv">
+<div align="left"><font class="largeSiteHeader">Lindholms Højene</font>
+</div>
+
+
+<table id="tableContentArea" class="tableContentArea">
+	<tr>
+		<td class="tableCell">
+
+		<div id="columnLeftDiv" class="locColumnLeftDiv">
+		
+		<div class="locContentLeftDiv">
+		<table>
+			
+			<tr>
+				<td class="locInfoBoxTd"><img
+					src="/fundogfortidsminder/images/sevaerdighed2.gif"
+					alt="National seværdighed"></td>
+				<td class="locInfoBoxTd"><font class="normalSiteHeader">National seværdighed</font></td>
+			</tr>
+			
+			<tr>
+				<td class="locInfoBoxTd"><img src="/fundogfortidsminder/images/check.gif"></td>
+				<td class="locInfoBoxTd"><font class="normalSiteHeader">Offentlig
+				adgang</font></td>
+			</tr>
+			
+			<tr>
+				<td class="locInfoBoxTd"><img src="/fundogfortidsminder/images/check.gif"></td>
+				<td class="locInfoBoxTd"><font class="normalSiteHeader">Parkeringsplads</font></td>
+			</tr>
+			
+			<tr>
+				<td class="locInfoBoxTd"><img src="/fundogfortidsminder/images/check.gif"></td>
+				<td class="locInfoBoxTd"><font class="normalSiteHeader">Skilt
+				fortidsmindet</font></td>
+			</tr>
+			
+			<tr>
+				<td class="locInfoBoxTd"><img src="/fundogfortidsminder/images/check.gif"></td>
+				<td class="locInfoBoxTd"><font class="normalSiteHeader">Skilt
+				offentlig vej</font></td>
+			</tr>
+			
+		</table>
+		</div>
+		
+		<div class="locContentLeftDiv"><font
+			class="locationDetailHeader">Administrative oplysninger</font> <br>
+		<br>
+		 <font class="locationDetailTextBold">Ansvarligt museum</font> <br>
+		 <a target="_blank" class="LocationDetailNavigation"
+			href="http://www.nordjyllandshistoriskemuseum.dk">Nordjyllands Historiske Museum</a><br>
+		<br>
+		  <font class="locationDetailTextBold">Kommune</font> <br>
+		<font class="locationDetailText">Aalborg</font>
+		<br>
+		<br>
+		 <font class="locationDetailTextBold">Sted- og lokalitetsnr.</font>
+		<br>
+		<font class="locationDetailText">120608-1</font>
+		<br>
+		<br>
+		 <font class="locationDetailTextBold">Fredningsnr.</font> <br>
+		<font class="locationDetailText">111310</font>
+		<br>
+		<br>
+		 <font class="locationDetailTextBold">Fredningsstatus</font> <br>
+		<font class="locationDetailText">Fredet 1937 eller senere</font>
+		<br>
+		<br>
+		
+		</div>
+		
+		</div>
+		<a class="LocalNavigation" href="/fundogfortidsminder/Lokalitet/114740/Udskriv/" style="top: -20px;" class="sogeres_Link_Right" target="_blanc">
+			Printvenlig side
+		</a>
+
+		<!-- <br><br>
+		<a class="LocalNavigation" href="/fundogfortidsminder/Information/Ordbog/" style="top: -20px;" class="sogeres_Link_Right">
+			Find betydningen af arkæologiske termer og begreper i ordbogen
+		</a>
+		 -->
+		</div>
+		</td>
+
+		<td class="tableCell">
+		<div id="columnCenterDiv" class="locColumnCenterDiv">
+		
+		<div class="locContentCenterDiv"><img
+			src="https://api.dataforsyningen.dk/service?version=1.1.1&service=WMS&request=GetMap&ticket=f1cf4cb706af03b330dc8dfabaa730da&servicename=topo_skaermkort_DAF&layers=dtk_skaermkort&styles=&srs=EPSG%3A25832&bbox=551957.272886971%2C6323022.57857649%2C558637.272886971%2C6329702.57857649&width=334&height=334&exceptions=application%2Fvnd.ogc.se_xml&illegallayers=TRUE&format=image%2Fpng" />
+		<img id="location_point_img"
+			style="position: absolute; left: 159px; top: 159px; z-index: 1; visibility: hidden"
+			alt="Lindholms Højene"
+			title="Lindholms Højene"
+			src="/fundogfortidsminder/images/locationpointwatchable.gif" />
+		<div>
+		<table width="100%" border="0">
+			<tr>
+				<td align="left"><a class="LocalNavigation"
+					href="/fundogfortidsminder/Kort?bbox=551957.272886971,6323022.57857649,558637.272886971,6329702.57857649&point=555297.272886971,6326362.57857649">Gå til kort</a></td>
+				
+				
+				<td align="right">
+					<a class="LocalNavigation" href="http://www.krak.dk/query?what=route&addr2=|Lindholms Højene||9.91218335598494|57.0773217870838&addr1=||||" target="_blank">Ruteplanlægger</a>
+				</td>
+			</tr>
+			
+			<tr><!-- Empty row for spacing before location description text-->
+				<td colspan="2">&nbsp;</td>
+			</tr>
+			<!-- Start free text for location -->
+			<tr>
+				<td colspan="2">
+					<font class="locNormalText">
+						På Lindholm Høje i Nordjylland ligger en stor gravplads med begravelser fra en hen ved 600-årig periode. De ældste grave er fra 400-årene, og de yngste er fra vikingetiden i 900-årene.
+   Limfjorden var i hele oldtiden et vigtigt farvand for rejser til og fra de nordiske lande. Fjorden var i vikingetiden også udgangspunkt for togter til England og resten af Europa. Datidens skibe kunne let sejle op ad Lindholm Å til Lindholm Høje. Her var den sandede jord let at dyrke, men samtidig sårbar over for sandflugt.
+   Omkring år 1100 har sandflugten været så voldsom, at Lindholm Høje blev forladt. Sandet dækkede stenene indtil fortidsmindet blev fredet i 1901 og udgravet i 1950’erne. 
+					</font>
+				</td>
+			</tr>
+			<!-- End free text for location -->
+			
+		</table>
+		</div>
+		</div>
+		 
+		
+		<!-- Start accordion implementation -->
+		<div id="cms-body" class="yui-skin-sam">
+		<div id="doc">
+		<div class="myAccordion">
+		<div class="yui-cms-accordion multiple fade fixIE">
+		<div class="yui-cms-item yui-panel selected">
+
+
+		<!-- Anlaeg start -->
+		
+		<div class="hd">
+		<font class="ListNavigation">Anl&#230;g og datering
+		&nbsp;(5)  
+ 		</font>
+ 		</div>
+
+		<div class="bd">
+		<div class="fixed">
+		<font class="accordionText"> 		
+		<table>
+			
+			<tr class="locNormalText">
+				<td>Skibssætning, Jernalder (dateret 375 - 1066 e.Kr.)</td>
+			</tr>
+			
+			<tr>
+				<td><br></td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td>Brandgrav (uspecificeret type), Jernalder (dateret 375 - 1066 e.Kr.)</td>
+			</tr>
+			
+			<tr>
+				<td><br></td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td>Jordfæstegrav, Jernalder (dateret 375 - 1066 e.Kr.)</td>
+			</tr>
+			
+			<tr>
+				<td><br></td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td>Bosættelse, uspec undergruppe, Jernalder (dateret 375 - 1066 e.Kr.)</td>
+			</tr>
+			
+			<tr>
+				<td><br></td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td>Marksystem, Vikingetid (dateret 750 - 1066 e.Kr.)</td>
+			</tr>
+			
+			<tr>
+				<td><br></td>
+			</tr>
+			
+		</table>
+		</font>
+		</div>
+		</div>
+		<!-- Anlaeg stop--> 
+
+		<!-- Fredningstekst start -->
+		
+		<div class="hd">
+		<font class="ListNavigation">Fredningstekst</font>
+ 		</div>
+ 		
+ 		<div class="bd">
+		<div class="fixed">
+		<font class="accordionText"> 		
+		<table>
+			<tr class="locNormalText">
+				<td>Grav- og boplads og agre på Lindholm Høje.</td>
+			</tr>
+		</table>
+		</font>
+		</div>
+		</div>		
+ 				
+ 		<!-- Fredningstekst stop--> 
+ 		
+ 		
+		<div class="actions"><a href="#" class="accordionToggleItem">&nbsp;</a>
+		</div>
+		</div>
+		<div class="yui-cms-item yui-panel">
+		
+		<div class="hd"><font class="ListNavigation">Unders&#248;gelsehistorie
+		 &nbsp;(13) </font></div>
+		<div class="bd">
+		<div class="fixed"><font class="accordionText"> <!-- Undersogelse start-->
+		<table>
+			
+			<tr class="locNormalText">
+				<td class="locExaminationYearTD">
+				1889
+				</td>
+				<td>Museal berejsning</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Nationalmuseet, Danske Afd., Danmarks Oldtid</td>
+			</tr>
+			
+			<tr class="locItalicText">
+				<td></td>
+				<td>"Lindholms Højene" ere natrulige Bakker. Paa Skraaningen mod SØ ligge tre Sænkninger, hovedsagelig dannede ved Sandflugt, derved er der blottet flere Stenkredse og Skibssætninger. Iøvrigt henvises til Cand. Bahnsons Beskrivelse af disse og deres Udgravning, foretagen i Juli i 1889.</td>
+			</tr>
+			
+			<tr>
+				<td></td>
+				<td><br>
+				</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td class="locExaminationYearTD">
+				1896
+				</td>
+				<td>Diverse sagsbehandling</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Journal nr.: 373/96</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Nationalmuseet, Danske Afd., Danmarks Oldtid</td>
+			</tr>
+			
+			<tr>
+				<td></td>
+				<td><br>
+				</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td class="locExaminationYearTD">
+				1939
+				</td>
+				<td>Museal berejsning</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Nationalmuseet, Danske Afd., Danmarks Oldtid</td>
+			</tr>
+			
+			<tr class="locItalicText">
+				<td></td>
+				<td>Grav- og boplads og agre på Lindholm Høje.</td>
+			</tr>
+			
+			<tr>
+				<td></td>
+				<td><br>
+				</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td class="locExaminationYearTD">
+				1943
+				</td>
+				<td>Diverse sagsbehandling</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Journal nr.: 934/43</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Nationalmuseet, Danske Afd., Danmarks Oldtid</td>
+			</tr>
+			
+			<tr class="locItalicText">
+				<td></td>
+				<td>Under Befæstningsarbejder er fundet Jernaldersgrave.</td>
+			</tr>
+			
+			<tr>
+				<td></td>
+				<td><br>
+				</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td class="locExaminationYearTD">
+				1960
+				</td>
+				<td>Diverse sagsbehandling</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Journal nr.: 458/60</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Nationalmuseet, Danske Afd., Danmarks Oldtid</td>
+			</tr>
+			
+			<tr class="locItalicText">
+				<td></td>
+				<td>Stor Yngre Jernalders Grav og Boplads, undersøgt 1953-58.</td>
+			</tr>
+			
+			<tr>
+				<td></td>
+				<td><br>
+				</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td class="locExaminationYearTD">
+				1960
+				</td>
+				<td>Diverse sagsbehandling</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Journal nr.: 1114/60</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Nationalmuseet, Danske Afd., Danmarks Oldtid</td>
+			</tr>
+			
+			<tr class="locItalicText">
+				<td></td>
+				<td>Lindholm Høje - grav- og bopladsen fredet 1960.</td>
+			</tr>
+			
+			<tr>
+				<td></td>
+				<td><br>
+				</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td class="locExaminationYearTD">
+				1964
+				</td>
+				<td>Diverse sagsbehandling</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Journal nr.: 472/64</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Nationalmuseet, Danske Afd., Danmarks Oldtid</td>
+			</tr>
+			
+			<tr>
+				<td></td>
+				<td><br>
+				</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td class="locExaminationYearTD">
+				1965
+				</td>
+				<td>Diverse sagsbehandling</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Journal nr.: 726/65</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Nationalmuseet, Danske Afd., Danmarks Oldtid</td>
+			</tr>
+			
+			<tr>
+				<td></td>
+				<td><br>
+				</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td class="locExaminationYearTD">
+				1966
+				</td>
+				<td>Diverse sagsbehandling</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Journal nr.: 731/66</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Nationalmuseet, Danske Afd., Danmarks Oldtid</td>
+			</tr>
+			
+			<tr>
+				<td></td>
+				<td><br>
+				</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td class="locExaminationYearTD">
+				1968
+				</td>
+				<td>Museal besigtigelse</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Skov- og Naturstyrelsen, 10. kontor</td>
+			</tr>
+			
+			<tr>
+				<td></td>
+				<td><br>
+				</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td class="locExaminationYearTD">
+				2010
+				</td>
+				<td>Fortidsminde af national betydning</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Journal nr.: 2010-7.20.03-0008</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Kulturstyrelsen</td>
+			</tr>
+			
+			<tr class="locItalicText">
+				<td></td>
+				<td>Ny skiltning på lokaliteten i forbindelse med projekt Danmarks Oldtid i Landskabet.</td>
+			</tr>
+			
+			<tr>
+				<td></td>
+				<td><br>
+				</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td class="locExaminationYearTD">
+				2012
+				</td>
+				<td>Analyser af materiale</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Lindholm Høje Museet</td>
+			</tr>
+			
+			<tr class="locItalicText">
+				<td></td>
+				<td>Udtagelse af 4 jordprøver.</td>
+			</tr>
+			
+			<tr>
+				<td></td>
+				<td><br>
+				</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td class="locExaminationYearTD">
+				2013
+				</td>
+				<td>Periodisk tilsyn med fredede lokaliteter</td>
+			</tr>
+			
+			<tr class="locNormalText">
+				<td></td>
+				<td>Nordjyllands Historiske Museum</td>
+			</tr>
+			
+			<tr class="locItalicText">
+				<td></td>
+				<td>Lindholm Høje. Gravplads med stensætninger fra jernalder og vikingetid.</td>
+			</tr>
+			
+			<tr>
+				<td></td>
+				<td><br>
+				</td>
+			</tr>
+			
+		</table>
+		<!-- Undersogelse stop--> 
+		</font></div>
+		</div>
+		<div class="actions"><a href="#" class="accordionToggleItem">&nbsp;</a>
+		</div>
+		</div>
+		<div class="yui-cms-item yui-panel">
+		
+		<div class="hd"><font class="ListNavigation">Litteraturhenvisninger
+		&nbsp;(0) </font></div>
+		<div class="bd">
+		<div class="fixed"><font class="accordionText"> <!-- Litt.henvisninger start-->
+		<table>
+			
+		</table>
+		<!-- Litt.henvisninger stop--> </font></div>
+		</div>
+		<div class="actions"><a href="#" class="accordionToggleItem">&nbsp;</a>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		<!-- End accordion implementation --></div>
+		</td>
+		<td class="tableCell">
+		<div id="columnRightDiv" class="locColumnRightDiv">
+		
+		<!-- KUL-7 -->
+		<!--
+		<div class="locContentRightDiv"><font class="normalSiteHeader">Her er plads til din historie</font>
+		<p>
+		<div class="locNormalText">Hvis du har personligt kendskab til dette fortidsminde, har du mulighed for at tilføje dine oplysninger, så andre<br> kan få nytte af dem.</div>
+		<br>
+		<a class="LocalNavigation"
+			href="javascript:Ext.UrlDialog.show('Skriv historie', 114740);">Skriv historie</a> <br>
+		 <br>
+		<img src="/fundogfortidsminder/images/Dashed-line_188.gif" /></div>
+		<div class="locContentRightDiv">
+		
+		</div>
+		-->
+		</td>
+	</tr>
+</table>
+
+
+</div>
+<!-- Add some space -->
+<p><!-- Footer -->
+<div id="pageFooterDiv">
+    
+<img src="/fundogfortidsminder/images/Dashed-line.gif" alt="" style="width: 850px"/>
+<div id="pageFooterDiv" class="pageFooterDiv" align="left">
+	<ul class="footerlist">
+		<li class="headerLink"><a class="FooterLink" href="/fundogfortidsminder/Kontakt">Kontakt</a> | </li>
+		<li class="headerLink"><a class="FooterLink" href="/fundogfortidsminder/Teknik">Teknik og tilg&aelig;ngelighed</a> | </li>
+		<li class="headerLink"><a class="FooterLink" href="/fundogfortidsminder/Privatliv">Privatlivspolitik</a> | </li>
+		<li class="headerLink"><a class="FooterLink" href="/fundogfortidsminder/Regler">Regler for brug</a></li>
+	</ul>
+	<p class="Footer"><b title="UTF-8;UTF-8">Slots- og Kulturstyrelsen </b>- H.C. Andersens Boulevard 2, 1553 K&oslash;benhavn V</p>
+</div>
+<div id="pageFooterListDiv" class="pageFooterListDiv"></div>
+
+</div>
+</div>
+</center>
+</body>
+</html>

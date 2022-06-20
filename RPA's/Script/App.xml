@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <SearchSettings>
+        <add key="Kulturarv_URL" value="https://www.kulturarv.dk/fundogfortidsminder/Lokalitet/"/>
+        <add key="Europeana_URL" value="YESYESYES"/>
+        <add key="GeoInfo" value=""/>
+    </SearchSettings>
+    <DatabaseSettings>
+        <Neo4J>
+            <add key="Neo4J" value="neo4j+s://2247b14c.databases.neo4j.io"/>
+        </Neo4J>
+    </DatabaseSettings>
+    <RegularExpressions>
+        <Kulturarv>
+            <add key="Kulturarv_Regex" value="(<!-- Start free text for location -->){0}[^\S](<tr>){0}[^\S](<td colspan=""2"">){0}[^\S](<font class=""locNormalText"">){0}[^\S]+[a-øA-Ø0-9-.,\s’]*(<\/font>)"/> 
+        </Kulturarv>
+        <Europeana>
+            <add key="" value=""/>
+        </Europeana>
+    </RegularExpressions>
+</configuration>

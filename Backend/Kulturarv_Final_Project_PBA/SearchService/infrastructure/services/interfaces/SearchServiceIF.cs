@@ -1,0 +1,10 @@
+public interface Search_Service_IF
+{
+    #region Version 1. 
+    public void Search_By_Region();
+    public void Search_By_Heritage_Type(); 
+    public void Search_By_Time_Age(); 
+    public void Search_By_Top_10_Close_Heritage_Sites();
+    public void Search_By_Institution_Event();
+    #endregion
+}
