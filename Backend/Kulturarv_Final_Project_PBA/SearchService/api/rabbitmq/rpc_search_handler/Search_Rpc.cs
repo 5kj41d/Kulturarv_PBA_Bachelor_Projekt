@@ -16,6 +16,8 @@ public class Search_Rpc
 	{
 		Init(); 
 	}
+
+	//TODO: Call the service. 
 	
 	private void Init()
 	{
@@ -28,7 +30,6 @@ public class Search_Rpc
 				replyQueueName = channel.QueueDeclare().QueueName; 
 				consumer = new EventingBasicConsumer(channel);
 
-				//NOTE: Should this be done in the gateways?
 				props = channel.CreateBasicProperties();
         		var correlationId = Guid.NewGuid().ToString();
         		props.CorrelationId = correlationId;
