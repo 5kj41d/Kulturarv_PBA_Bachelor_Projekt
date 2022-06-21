@@ -15,9 +15,10 @@ namespace SearchService
     {
         static async Task Main(string[] args)
         {
+            //Console.WriteLine(Environment.GetFolderPath("C:\\Users\\fanes\\Source\\Repos\\Sk41d\\Kulturarv_PBA_Bachelor_Projekt\\Backend\\Kulturarv_Final_Project_PBA\\SearchService").);
             IConfiguration Config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.Development.json")
-                .SetBasePath(Environment.CurrentDirectory)
+                .SetBasePath("C:\\Users\\fanes\\Source\\Repos\\Sk41d\\Kulturarv_PBA_Bachelor_Projekt\\Backend\\Kulturarv_Final_Project_PBA\\SearchService")
                 .Build();
             RPCServer rpc = new  RPCServer(Config); 
             //TODO: Should run all the time. 
