@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace rabbitmq.rpc_search_handler
 {
+<<<<<<< HEAD:Backend/Kulturarv_Final_Project_PBA/SearchService/rabbitmq/rpc_search_handler/Search_Rpc.cs
 public class RPCServer
 {
     private readonly IConfiguration _config;
@@ -15,6 +16,46 @@ public class RPCServer
 		while(true)
         Listen_And_Respond();
     }
+=======
+	private readonly IConnection connection;
+    private readonly IModel channel;
+    private string replyQueueName;
+    private EventingBasicConsumer consumer;
+    private readonly BlockingCollection<string> respQueue = new BlockingCollection<string>();
+    private IBasicProperties props;
+	public Search_Rpc()
+	{
+		Init(); 
+	}
+
+	//TODO: Call the service. 
+	
+	private void Init()
+	{
+		Console.WriteLine("Search_Rpc init!");
+		var factory = new ConnectionFactory();	//TODO: --> Need URL.
+		using(var connection = factory.CreateConnection())
+		{
+			using(var channel = connection.CreateModel())
+			{
+				replyQueueName = channel.QueueDeclare().QueueName; 
+				consumer = new EventingBasicConsumer(channel);
+
+				props = channel.CreateBasicProperties();
+        		var correlationId = Guid.NewGuid().ToString();
+        		props.CorrelationId = correlationId;
+        		props.ReplyTo = replyQueueName;
+
+				consumer.Received += (model, ea) =>
+        	{
+            	var body = ea.Body.ToArray();
+            	var response = Encoding.UTF8.GetString(body);
+            	if (ea.BasicProperties.CorrelationId == correlationId)
+            	{
+                	respQueue.Add(response);
+            	}
+        	};
+>>>>>>> developer:Backend/Kulturarv_Final_Project_PBA/SearchService/api/rabbitmq/rpc_search_handler/Search_Rpc.cs
 
     private ConnectionFactory Setup_Connection_Factory()
     {

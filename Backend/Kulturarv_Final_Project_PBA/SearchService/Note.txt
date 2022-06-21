@@ -1,3 +1,0 @@
-Note: 
-
-Vi har valgt at gøre brug af rabbitmq fra gateways til services grundet asynkronitet. 
