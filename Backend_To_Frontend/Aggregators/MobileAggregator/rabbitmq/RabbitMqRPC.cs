@@ -26,21 +26,21 @@ namespace rabbitmq
                 UserName = RabbitMqConenction.Username, Password = RabbitMqConenction.Password, 
                 VirtualHost = RabbitMqConenction.VirtualHost};  
             using (var connection = factory.CreateConnection())
-            using (var channel = connection.CreateModel())
+            using(var con_channel = connection.CreateModel())
+            using (var pub_channel = connection.CreateModel())
             {
-                channel.QueueDeclare(queue: RabbitMqConenction.Channels["RPC_Request"], durable: true,
+                pub_channel.QueueDeclare(queue: RabbitMqConenction.Channels["RPC_Request_From_Aggregator"], durable: true,
                 exclusive: false, autoDelete: false, arguments: null);
-                channel.BasicQos(0,1,false);
-                var consumer = new EventingBasicConsumer(channel);
-                channel.BasicConsume(queue: RabbitMqConenction.Channels["RPC_Reply"], autoAck: false, consumer: consumer);
-                Console.WriteLine(" [x] Awaiting RPC requests");
+                pub_channel.BasicQos(0,1,false);
+                var consumer = new EventingBasicConsumer(pub_channel);
+                con_channel.BasicConsume(queue: RabbitMqConenction.Channels["RPC_Reply"], autoAck: false, consumer: consumer);
 
                 consumer.Received += (model, ea) => 
                 {
                     string response = null; 
                     var body = ea.Body.ToArray(); 
                     var props = ea.BasicProperties; 
-                    var replyProps = channel.CreateBasicProperties(); 
+                    var replyProps = pub_channel.CreateBasicProperties(); 
                     replyProps.CorrelationId = props.CorrelationId; 
 
                     try
@@ -59,8 +59,8 @@ namespace rabbitmq
                     {   
                         //SENDING RESPONSE BACK TO SENDER: 
                         var responseBytes = Encoding.UTF8.GetBytes(response);
-                        channel.BasicPublish(exchange: "amq.direct", routingKey: "Search", basicProperties: replyProps, body: responseBytes);
-                        channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
+                        pub_channel.BasicPublish(exchange: "amq.direct", routingKey: "Search", basicProperties: replyProps, body: responseBytes);
+                        pub_channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
                     }
                 }; 
             } 
@@ -84,7 +84,8 @@ namespace rabbitmq
                 {"RPC_Reply","RPC_Reply_Search_Queue"},
                 {"RPC_Request","RPC_Request_Search_Queue"},
                 {"Auth_Reply","Authentication_Queue_Reply"},
-                {"Auth_Request","Authentication_Queue_Request"}
+                {"Auth_Request","Authentication_Queue_Request"},
+                {"RPC_Request_From_Aggregator", "RPC_Request_From_Aggregator"}
             };
         }
 
