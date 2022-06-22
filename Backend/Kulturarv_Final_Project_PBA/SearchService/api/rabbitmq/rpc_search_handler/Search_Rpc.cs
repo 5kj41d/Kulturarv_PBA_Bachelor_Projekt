@@ -28,27 +28,48 @@ public class Search_Rpc
 			channel = connection.CreateModel();
 			replyQueueName = channel.QueueDeclare().QueueName;
 			consumer = new EventingBasicConsumer(channel);
+
 			//Event when it receives message
 			consumer.Received += (model, ea) =>
 			{
 				var body = ea.Body.ToArray();
 				var message = Encoding.UTF8.GetString(body);
+				Console.WriteLine($"message: {message}");
+				var response = GenerateDemoData();
+				var responseBytes = Encoding.UTF8.GetBytes(response);
+
+
+
+
+			channel.BasicPublish
+			(
+				exchange: "amq.direct",
+				routingKey: props.ReplyTo,
+				basicProperties: channel.CreateBasicProperties(),
+				body: responseBytes
+			);
+
 			};
-			
-			
+
+
 			//Consumes from channel declared in the queue name
 			channel.BasicConsume
 			(
 				queue: "RPC_Request_From_Aggregator",
 				autoAck: true,
 				consumer: consumer
-			) ; ;
+			);
 			
 			//Init(); 
 		}
 
-		//TODO: Call the service. 
 
+		private string GenerateDemoData()
+        {
+			return "Gravhøj, Jern Alder, 100BC";
+        }
+
+		//TODO: Call the service. 
 		private void Init()
 		{
 			Console.WriteLine("Search_Rpc init!");
