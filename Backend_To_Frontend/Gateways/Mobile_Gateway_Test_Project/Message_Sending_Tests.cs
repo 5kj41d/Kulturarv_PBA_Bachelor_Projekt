@@ -1,7 +1,6 @@
 using Mobile_Gateway.rabbitmq;
 using Moq;
 using Xunit;
-using Mobile_Gateway; 
 using mobile_gateway_models;
 
 namespace Mobile_Gateway_Test_Project

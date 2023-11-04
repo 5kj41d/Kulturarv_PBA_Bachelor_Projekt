@@ -32,7 +32,13 @@ namespace Mobile_Gateway.rabbitmq
         {
             _configuration = options.Value;
             _logger = logger;
-            connection = Setup_Connection();
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.UserName = "qrnmzmvv";
+            factory.Password = "acgnVEp0crbkjhO_iySLLAxSFV-CiK3J";
+            factory.Port = 5672;
+            factory.VirtualHost = "qrnmzmvv";
+            factory.HostName = "hawk.rmq.cloudamqp.com";
+            connection = factory.CreateConnection();
             channel = connection.CreateModel();
             replyQueueName = channel.QueueDeclare().QueueName;
             consumer = new EventingBasicConsumer(channel);
@@ -74,7 +80,13 @@ namespace Mobile_Gateway.rabbitmq
         {
             connection.Close();
         }
-    
+
+        public string Sent_Message_To_Message_Bus_RPC()
+        {
+
+            return ""; 
+        }
+
 
         /// <summary>
         /// Setup connection to RabbitMQ.

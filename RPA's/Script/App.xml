@@ -12,7 +12,7 @@
     </DatabaseSettings>
     <RegularExpressions>
         <Kulturarv>
-            <add key="Kulturarv_Regex" value="(<!-- Start free text for location -->){0}[^\S](<tr>){0}[^\S](<td colspan=""2"">){0}[^\S](<font class=""locNormalText"">){0}[^\S]+[a-øA-Ø0-9-.,\s’]*(<\/font>)"/> 
+          
         </Kulturarv>
         <Europeana>
             <add key="" value=""/>

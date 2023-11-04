@@ -1,75 +1,126 @@
 using System;
-using System.Collections.Concurrent;
-using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Text;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Concurrent;
 
+namespace rabbitmq.rpc_search_handler
+{
 public class Search_Rpc
 {
+    private readonly IConfiguration _config;
 	private readonly IConnection connection;
     private readonly IModel channel;
     private string replyQueueName;
     private EventingBasicConsumer consumer;
     private readonly BlockingCollection<string> respQueue = new BlockingCollection<string>();
     private IBasicProperties props;
-	public Search_Rpc()
+	public Search_Rpc(IConfiguration config)
 	{
-		Init(); 
-	}
+			ConnectionFactory factory = new ConnectionFactory();
+			factory.UserName = "qrnmzmvv";
+			factory.Password = "acgnVEp0crbkjhO_iySLLAxSFV-CiK3J";
+			factory.Port = 5672;
+			factory.VirtualHost = "qrnmzmvv";
+			factory.HostName = "hawk.rmq.cloudamqp.com";
+			connection = factory.CreateConnection();
+			channel = connection.CreateModel();
+			replyQueueName = channel.QueueDeclare().QueueName;
+			consumer = new EventingBasicConsumer(channel);
 
-	//TODO: Call the service. 
-	
-	private void Init()
-	{
-		Console.WriteLine("Search_Rpc init!");
-		var factory = new ConnectionFactory();	//TODO: --> Need URL.
-		using(var connection = factory.CreateConnection())
-		{
-			using(var channel = connection.CreateModel())
+			//Event when it receives message
+			consumer.Received += (model, ea) =>
 			{
-				replyQueueName = channel.QueueDeclare().QueueName; 
-				consumer = new EventingBasicConsumer(channel);
+				var body = ea.Body.ToArray();
+				var message = Encoding.UTF8.GetString(body);
+				Console.WriteLine($"message: {message}");
+				var response = GenerateDemoData();
+				var responseBytes = Encoding.UTF8.GetBytes(response);
 
-				props = channel.CreateBasicProperties();
-        		var correlationId = Guid.NewGuid().ToString();
-        		props.CorrelationId = correlationId;
-        		props.ReplyTo = replyQueueName;
 
-				consumer.Received += (model, ea) =>
-        	{
-            	var body = ea.Body.ToArray();
-            	var response = Encoding.UTF8.GetString(body);
-            	if (ea.BasicProperties.CorrelationId == correlationId)
-            	{
-                	respQueue.Add(response);
-            	}
-        	};
 
-        	channel.BasicConsume(
-            	consumer: consumer,
-            	queue: replyQueueName,
-            	autoAck: true);
+
+			channel.BasicPublish
+			(
+				exchange: "amq.direct",
+				routingKey: props.ReplyTo,
+				basicProperties: channel.CreateBasicProperties(),
+				body: responseBytes
+			);
+
+			};
+
+
+			//Consumes from channel declared in the queue name
+			channel.BasicConsume
+			(
+				queue: "RPC_Request_From_Aggregator",
+				autoAck: true,
+				consumer: consumer
+			);
+			
+			//Init(); 
+		}
+
+
+		private string GenerateDemoData()
+        {
+			return "Gravhøj, Jern Alder, 100BC";
+        }
+
+		//TODO: Call the service. 
+		private void Init()
+		{
+			Console.WriteLine("Search_Rpc init!");
+			var factory = new ConnectionFactory();  //TODO: --> Need URL.
+			factory.UserName = "qrnmzmvv";
+			factory.VirtualHost = "qrnmzmvv";
+			factory.Password = "acgnVEp0crbkjhO_iySLLAxSFV-CiK3J";
+			factory.HostName = "hawk.rmq.cloudamqp.com";
+			using (var connection = factory.CreateConnection())
+			{
+				using (var channel = connection.CreateModel())
+				{
+					replyQueueName = channel.QueueDeclare().QueueName;
+					consumer = new EventingBasicConsumer(channel);
+
+					props = channel.CreateBasicProperties();
+					var correlationId = Guid.NewGuid().ToString();
+					props.CorrelationId = correlationId;
+					props.ReplyTo = replyQueueName;
+
+					consumer.Received += (model, ea) =>
+				{
+					var body = ea.Body.ToArray();
+					var response = Encoding.UTF8.GetString(body);
+					if (ea.BasicProperties.CorrelationId == correlationId)
+					{
+						respQueue.Add(response);
+					}
+				};
+				}
 			}
 		}
 
-	}
-
-	//TODO: Should be called?
-	public string Call(string message)
+    private ConnectionFactory Setup_Connection_Factory()
     {
-        var messageBytes = Encoding.UTF8.GetBytes(message);
-        channel.BasicPublish(
-            exchange: "",
-            routingKey: "rpc_queue",
-            basicProperties: props,
-            body: messageBytes);
-
-        return respQueue.Take();
+		var rabbitMqConfig = _config.GetSection("RabbitMqConnection").Get<RabbitMQConnectionHandler>();
+		var factory = new ConnectionFactory
+		{
+			HostName = rabbitMqConfig.HostName,
+			Password = rabbitMqConfig.Password,
+			VirtualHost = rabbitMqConfig.VirtualHost,
+			UserName = rabbitMqConfig.Username,
+			Uri = new Uri(rabbitMqConfig.URL),
+		};
+        return factory;
     }
+    
 
-    public void Close()
+    private void Check_Message_Body()
     {
-        connection.Close();
+        //TODO: Check hvilken metode den skal kalde. 
     }
-	
+}
 }
