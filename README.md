@@ -2,7 +2,7 @@
 Beskrivelse: 
 Projekt med henblik på at innovere og fremskynde Danmarks kulturarv. 
 
-Projektdeltagere: 
+Projektdeltagere:
 Anders Friang Jensen og Magnus Just Sund Carlsen. 
 PBA Softwareudvikling UCN bachelorprojekt.
 2022. 
