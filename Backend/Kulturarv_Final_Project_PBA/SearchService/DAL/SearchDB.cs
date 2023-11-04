@@ -54,13 +54,14 @@ namespace SearchService.DAL
 
         public async Task<string> Search_By_Top_10_Close_Heritage_Sites(double yourLongitude, double yourLatitude)
         {
-            var query = @"With point({longitude: $yourLongitude, latitude:$yourLatitude}) as yourLocation
-            MATCH (h:Heritage_Location)
+            var query = @"With point({x: $yourLongitude, y:$yourLatitude}) as yourLocation
+            MATCH(h:Heritage_Location)
             WHERE point.distance(yourLocation, h.Coordinate) < 50000000000
-            RETURN h.Name, h.Coordinate, h.Terrain_Type, h.Basic_Information, h.Origin_Year, h.Type
-            ORDER BY point.distance(yourLocation, h.Coordinate) ASC 
-            LIMIT 10
-            ";
+            RETURN
+            h.Name, h.Coordinate, h.Terrain_Type, h.Basic_Information, h.Origin_Year, h.Type
+            ORDER BY point.distance(yourLocation, h.Coordinate) ASC
+            LIMIT 10";
+
             var session = _driver.AsyncSession();
             List<IRecord> readResults = new List<IRecord>();
             string resultJson = null;

@@ -1,12 +1,10 @@
-<<<<<<< HEAD
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client; 
 using rabbitmq.rpc_search_handler;
-=======
-﻿using System; 
->>>>>>> developer
+
+
 
 namespace SearchService
 {
@@ -20,21 +18,17 @@ namespace SearchService
     {
         static async Task Main(string[] args)
         {
-<<<<<<< HEAD
-            //Console.WriteLine(Environment.GetFolderPath("C:\\Users\\fanes\\Source\\Repos\\Sk41d\\Kulturarv_PBA_Bachelor_Projekt\\Backend\\Kulturarv_Final_Project_PBA\\SearchService").);
+
             IConfiguration Config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.Development.json")
                 .SetBasePath("C:\\Users\\fanes\\Source\\Repos\\Sk41d\\Kulturarv_PBA_Bachelor_Projekt\\Backend\\Kulturarv_Final_Project_PBA\\SearchService")
                 .Build();
-            RPCServer rpc = new  RPCServer(Config); 
+            Search_Rpc rpc = new  Search_Rpc(Config); 
             //TODO: Should run all the time. 
             //Search_Rpc search_Rpc = new Search_Rpc();
             Search_Service_IF searchService = new Search_Service();
-            await searchService.Search_By_Top_10_Close_Heritage_Sites(9.003, 52.0005);
+            //await searchService.Search_By_Top_10_Close_Heritage_Sites(9.003, 52.0005);
 
-=======
-            //Search_Rpc search_Rpc = new Search_Rpc(); 
->>>>>>> developer
         }
 
 
